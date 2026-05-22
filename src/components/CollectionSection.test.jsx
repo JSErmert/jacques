@@ -1,0 +1,19 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import CollectionSection from './CollectionSection'
+
+beforeEach(() => {
+  global.IntersectionObserver = vi.fn().mockImplementation(function() {
+    return { observe: vi.fn(), disconnect: vi.fn() }
+  })
+  window.matchMedia = vi.fn().mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })
+})
+
+it('lists tracks and plays on click', async () => {
+  const onPlay = vi.fn()
+  render(<CollectionSection onPlay={onPlay} />)
+  expect(screen.getByText('Nocturne in E-flat')).toBeInTheDocument()
+  await userEvent.click(screen.getByText('Blue Reverie'))
+  expect(onPlay).toHaveBeenCalledWith('blue-reverie')
+})
