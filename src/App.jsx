@@ -16,6 +16,7 @@ import AlbumOverlay from './components/AlbumOverlay'
 import LiveSection from './components/LiveSection'
 import ContactSection from './components/ContactSection'
 import PersistentPlayer from './components/PersistentPlayer'
+import NavigationBar from './components/NavigationBar'
 
 export default function App() {
   const {
@@ -36,6 +37,7 @@ export default function App() {
 
   return (
     <>
+      <NavigationBar />
       <BackgroundLayer />
 
       <HeroSection onBegin={begin} gateOpen={gateOpen} />
