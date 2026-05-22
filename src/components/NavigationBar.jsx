@@ -2,6 +2,10 @@
 // Left: "JACQUES" wordmark with "ARCHIVE" eyebrow.
 // Right: nav links anchoring to #archive / #about / #live / #contact.
 // Mobile (<= 768px): condensed padding, smaller link gap, eyebrow hidden.
+// At the very top the bar floats transparent; once scrolled it fades into a
+// dark chocolate-tinted frosted glass so content no longer bleeds through it.
+
+import { useState, useEffect } from 'react'
 
 const navStyles = `
   .nav-bar {
@@ -14,6 +18,19 @@ const navStyles = `
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background 0.4s ease, backdrop-filter 0.4s ease,
+                border-color 0.4s ease, box-shadow 0.4s ease, padding 0.3s ease;
+  }
+  .nav-bar.scrolled {
+    background: rgba(28,16,8,0.74);
+    backdrop-filter: blur(22px) saturate(1.3);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    border-bottom: 1px solid rgba(200,137,58,0.14);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
   .nav-links {
     display: flex;
@@ -35,6 +52,10 @@ const navStyles = `
     .nav-bar {
       padding: 18px 20px;
     }
+    .nav-bar.scrolled {
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
     .nav-links {
       gap: 18px;
     }
@@ -45,8 +66,17 @@ const navStyles = `
 `
 
 export default function NavigationBar() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <nav aria-label="Site navigation" className="nav-bar">
+    <nav aria-label="Site navigation" className={scrolled ? 'nav-bar scrolled' : 'nav-bar'}>
       <style>{navStyles}</style>
 
       {/* Left — wordmark + eyebrow */}
