@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Jacques — Dreamscape Ambient</title>
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #08090f;
+    --warm:      #c8873a;
+    --cool:      #3a5fc8;
+    --violet:    #8a6fc8;
+    --glass-bg:  rgba(255,255,255,0.05);
+    --glass-bg2: rgba(255,255,255,0.09);
+    --glass-bd:  rgba(255,255,255,0.10);
+    --text-1:    #f0ede8;
+    --text-2:    #8a8880;
+    --wood-dark: #3c2010;
+    --wood-mid:  #5c3d1e;
+    --wood-lt:   #8c6030;
+    --r-card:    16px;
+    --r-panel:   20px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── Wood Pillar ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 10%,
+      var(--wood-mid) 30%,
+      var(--wood-lt) 50%,
+      var(--wood-mid) 70%,
+      var(--wood-dark) 90%,
+      transparent 100%
+    );
+    opacity: 0.6;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* ─── Generative Ambient Field ─── */
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Slow warm drift — layer 1 */
+  .ambient-field::before {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(ellipse 60% 40% at 30% 55%, rgba(200, 135, 58, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 45% 55% at 70% 30%, rgba(58, 95, 200, 0.15) 0%, transparent 70%),
+                radial-gradient(ellipse 35% 35% at 55% 80%, rgba(138, 111, 200, 0.10) 0%, transparent 60%);
+    animation: driftWarm 14s ease-in-out infinite alternate;
+  }
+
+  /* Slow cool drift — layer 2 */
+  .ambient-field::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(ellipse 50% 60% at 65% 40%, rgba(58, 95, 200, 0.12) 0%, transparent 65%),
+                radial-gradient(ellipse 55% 40% at 25% 70%, rgba(138, 111, 200, 0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 80% 80%, rgba(200, 135, 58, 0.08) 0%, transparent 55%);
+    animation: driftCool 18s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes driftWarm {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 1; }
+    33%  { transform: translate(4%,  -3%)   scale(1.03); }
+    66%  { transform: translate(-3%,  5%)   scale(0.97); }
+    100% { transform: translate(2%,  -6%)   scale(1.05); opacity: 0.85; }
+  }
+  @keyframes driftCool {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 0.9; }
+    40%  { transform: translate(-5%,  3%)   scale(1.04); }
+    70%  { transform: translate(4%,  -4%)   scale(0.96); }
+    100% { transform: translate(-2%,  6%)   scale(1.06); opacity: 1; }
+  }
+
+  /* Faint SVG aurora shimmer overlay */
+  .aurora-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.18;
+  }
+
+  /* ─── Scroll container ─── */
+  .scroll-root {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ─── Section base ─── */
+  section {
+    position: relative;
+    width: 100%;
+  }
+
+  /* ─── Hero Section ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+  }
+
+  /* Hero center glow */
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse at center,
+      rgba(200, 135, 58, 0.14) 0%,
+      rgba(138, 111, 200, 0.08) 45%,
+      transparent 75%
+    );
+    border-radius: 50%;
+    animation: centerPulse 6s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes centerPulse {
+    0%   { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); }
+    100% { opacity: 1.0; transform: translate(-50%, -50%) scale(1.08); }
+  }
+
+  .hero-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 7.5vw;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    /* Subtle text glow */
+    text-shadow:
+      0 0 80px rgba(200, 135, 58, 0.30),
+      0 0 140px rgba(138, 111, 200, 0.18);
+    animation: nameFloat 5s ease-in-out infinite alternate;
+    /* "Dissolved" state class will add: opacity: 0; filter: blur(16px); */
+    transition: opacity 1.2s ease, filter 1.2s ease;
+  }
+
+  @keyframes nameFloat {
+    0%   { transform: translateY(0px); }
+    100% { transform: translateY(-6px); }
+  }
+
+  /* Thin divider line below name */
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(200,135,58,0.5), transparent);
+    margin: 28px auto 32px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* "Begin listening" CTA */
+  .begin-btn {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    padding: 8px 0;
+    transition: color 0.4s ease;
+    /* Underline accent */
+  }
+  .begin-btn::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: rgba(200, 135, 58, 0.4);
+    margin-top: 4px;
+    transition: background 0.4s ease, width 0.4s ease;
+  }
+  .begin-btn:hover {
+    color: var(--text-1);
+  }
+  .begin-btn:hover::after {
+    background: rgba(200, 135, 58, 0.8);
+  }
+
+  /* Hero dissolved state — toggled by JS on click */
+  .hero-name.dissolved {
+    opacity: 0;
+    filter: blur(16px);
+  }
+  /* Field brightens on dissolve — simulated by #hero::after */
+  #hero.listening::before {
+    opacity: 1;
+    animation: none;
+    transform: translate(-50%, -50%) scale(1.25);
+    background: radial-gradient(ellipse at center,
+      rgba(200, 135, 58, 0.26) 0%,
+      rgba(138, 111, 200, 0.16) 45%,
+      transparent 75%
+    );
+    transition: all 1.4s ease;
+  }
+
+  /* Scroll hint arrow */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.35;
+    animation: hintFade 2.5s ease-in-out infinite alternate;
+    z-index: 2;
+  }
+  .scroll-hint span {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .scroll-hint svg { display: block; }
+  @keyframes hintFade {
+    0%   { opacity: 0.20; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0.45; transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ─── Below-fold section: Library glimpse ─── */
+  #library-glimpse {
+    padding: 80px 140px 100px;
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  /* Section label */
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: rgba(200, 135, 58, 0.65);
+    font-family: system-ui, Arial, sans-serif;
+    margin-bottom: 4px;
+  }
+
+  .section-heading {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--text-1);
+    margin-bottom: 8px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    max-width: 520px;
+  }
+
+  /* Track card grid */
+  .track-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    width: 100%;
+  }
+
+  .track-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-card);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    padding: 28px 24px 24px;
+    position: relative;
+    overflow: hidden;
+    /* Subtle inner highlight at top */
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 8px 32px rgba(0,0,0,0.45);
+    transition: background 0.35s ease, box-shadow 0.35s ease;
+  }
+  .track-card:hover {
+    background: var(--glass-bg2);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 12px 40px rgba(0,0,0,0.55);
+  }
+
+  /* Wood grain left border accent on each card */
+  .track-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 20%,
+      var(--wood-lt) 50%,
+      var(--wood-mid) 80%,
+      transparent 100%
+    );
+    border-radius: var(--r-card) 0 0 var(--r-card);
+    opacity: 0.55;
+  }
+
+  /* Warm micro-glow top-right corner on card */
+  .track-card::after {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(200,135,58,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .track-num {
+    font-size: 10px;
+    letter-spacing: 0.20em;
+    color: var(--text-2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+
+  .track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--text-1);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  .track-meta {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.06em;
+  }
+
+  .track-badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(138, 111, 200, 0.8);
+    border: 1px solid rgba(138, 111, 200, 0.25);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-top: 10px;
+  }
+
+  /* Play glyph on card */
+  .track-play {
+    position: absolute;
+    bottom: 22px;
+    right: 22px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .track-play:hover {
+    border-color: rgba(200,135,58,0.5);
+    background: rgba(200,135,58,0.08);
+  }
+  .track-play svg { display: block; }
+
+  /* About panel — partially visible at bottom of viewport */
+  .about-peek {
+    padding: 0 140px 60px;
+  }
+
+  .about-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    padding: 44px 48px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 48px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 16px 48px rgba(0,0,0,0.50);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Warm bleed left on about panel */
+  .about-panel::before {
+    content: '';
+    position: absolute;
+    left: -40px; top: -40px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(200,135,58,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .about-left .section-eyebrow { margin-bottom: 12px; }
+  .about-left .section-heading { font-size: 1.9rem; }
+
+  .about-right p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.9;
+    max-width: 520px;
+  }
+
+  /* ─── Persistent Bottom Player ─── */
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: rgba(12, 12, 18, 0.75);
+    border-top: 1px solid var(--glass-bd);
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 32px;
+    /* Animate in: start below */
+    transform: translateY(100%);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* JS adds .visible to slide it up */
+  .player-bar.visible {
+    transform: translateY(0%);
+  }
+
+  .player-track-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+  }
+  .player-track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 13px;
+    color: var(--text-1);
+    letter-spacing: 0.03em;
+  }
+  .player-track-type {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-top: 2px;
+  }
+
+  /* Waveform placeholder */
+  .player-waveform {
+    flex: 1;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0.4;
+  }
+  .player-waveform span {
+    display: block;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to top, var(--warm), var(--violet));
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ctrl-btn:hover { opacity: 1; }
+
+  .ctrl-play-pause {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-bd);
+    background: rgba(255,255,255,0.05);
+    opacity: 1;
+  }
+  .ctrl-play-pause:hover {
+    background: rgba(200,135,58,0.12);
+    border-color: rgba(200,135,58,0.4);
+  }
+
+  .player-time {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* ─── Slim nav ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 28px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Transparent — blends with field */
+  }
+
+  .nav-brand {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(240, 237, 232, 0.70);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--text-1); }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Ambient Generative Field ─── -->
+<div class="ambient-field">
+  <!-- Subtle aurora shimmer as inline SVG -->
+  <svg class="aurora-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="g1" cx="28%" cy="58%" r="55%">
+        <stop offset="0%" stop-color="#c8873a" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#c8873a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="g2" cx="72%" cy="32%" r="50%">
+        <stop offset="0%" stop-color="#3a5fc8" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#3a5fc8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="g3" cx="55%" cy="80%" r="40%">
+        <stop offset="0%" stop-color="#8a6fc8" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#8a6fc8" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Faint horizontal aurora bands -->
+      <linearGradient id="band1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#c8873a" stop-opacity="0"/>
+        <stop offset="30%" stop-color="#c8873a" stop-opacity="0.06"/>
+        <stop offset="60%" stop-color="#3a5fc8" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#3a5fc8" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="band2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#8a6fc8" stop-opacity="0"/>
+        <stop offset="40%" stop-color="#8a6fc8" stop-opacity="0.05"/>
+        <stop offset="70%" stop-color="#c8873a" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#c8873a" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#g1)"/>
+    <rect width="1440" height="900" fill="url(#g2)"/>
+    <rect width="1440" height="900" fill="url(#g3)"/>
+    <!-- Thin soft aurora lines, barely visible -->
+    <ellipse cx="720" cy="360" rx="900" ry="60" fill="url(#band1)" opacity="0.7"/>
+    <ellipse cx="720" cy="480" rx="800" ry="45" fill="url(#band2)" opacity="0.5"/>
+    <ellipse cx="720" cy="580" rx="700" ry="35" fill="url(#band1)" opacity="0.4" transform="rotate(-2 720 580)"/>
+  </svg>
+</div>
+
+<!-- ─── Nav ─── -->
+<nav>
+  <span class="nav-brand">Jacques</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#library">Library</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll Root ─── -->
+<div class="scroll-root">
+
+  <!-- ─── Hero ─── -->
+  <section id="hero">
+    <h1 class="hero-name" id="heroName">Jacques</h1>
+    <div class="hero-divider"></div>
+    <button class="begin-btn" id="beginBtn" onclick="beginListening()">
+      Begin listening
+    </button>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <svg width="14" height="20" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="12" height="18" rx="6" stroke="#f0ede8" stroke-width="1" fill="none" opacity="0.5"/>
+        <circle cx="7" cy="6" r="2" fill="#f0ede8" opacity="0.6">
+          <animate attributeName="cy" values="6;13;6" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ─── Library glimpse (below fold) ─── -->
+  <section id="library-glimpse">
+    <div>
+      <p class="section-eyebrow">Library</p>
+      <h2 class="section-heading">Works</h2>
+      <p class="section-sub">Recordings, studies, and unreleased sessions — stream only.</p>
+    </div>
+
+    <div class="track-grid">
+      <!-- Card 1 -->
+      <div class="track-card">
+        <p class="track-num">01</p>
+        <h3 class="track-title">Nocturne in E-flat</h3>
+        <p class="track-meta">Solo Piano · 4:22</p>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="track-card">
+        <p class="track-num">02</p>
+        <h3 class="track-title">Blue Reverie</h3>
+        <p class="track-meta">Piano Trio · 6:08</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="track-card">
+        <p class="track-num">03</p>
+        <h3 class="track-title">Café Trois</h3>
+        <p class="track-meta">Jazz Quartet · 5:47</p>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="track-card">
+        <p class="track-num">04</p>
+        <h3 class="track-title">Still Water</h3>
+        <p class="track-meta">Solo Piano · 3:55</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="track-card">
+        <p class="track-num">05</p>
+        <h3 class="track-title">Interlude No. 2</h3>
+        <p class="track-meta">Chamber · 2:30</p>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="track-card">
+        <p class="track-num">06</p>
+        <h3 class="track-title">La Nuit Dernière</h3>
+        <p class="track-meta">Jazz Duo · 7:12</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1l8 5-8 5V1z" fill="#f0ede8" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── About peek (further below fold) ─── -->
+  <section id="about" style="padding-bottom:120px;">
+    <div class="about-peek">
+      <div class="about-panel">
+        <div class="about-left">
+          <p class="section-eyebrow">About</p>
+          <h2 class="section-heading">The Artist</h2>
+        </div>
+        <div class="about-right">
+          <p>
+            Jacques is a pianist and composer working at the intersection of classical tradition and jazz improvisation.
+            Trained in formal conservatory practice, his music is shaped equally by the silence between notes
+            and the warmth of late-night sessions — a sound that has found its home on stages
+            from intimate San Diego clubs to the storied backrooms of Carlsbad Village.
+          </p>
+          <p style="margin-top:20px;">
+            His recordings are offered here as they were made: unguarded, unhurried.
+            The unreleased sessions are available to stream because some music
+            is better heard than preserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /scroll-root -->
+
+<!-- ─── Persistent Bottom Player ─── -->
+<div class="player-bar" id="playerBar">
+  <!-- Wood pillar micro-accent on player left edge -->
+  <div style="width:2px;height:40px;background:linear-gradient(to bottom,var(--wood-dark),var(--wood-lt),var(--wood-dark));border-radius:1px;opacity:0.5;flex-shrink:0;"></div>
+
+  <div class="player-track-info">
+    <span class="player-track-title">Nocturne in E-flat</span>
+    <span class="player-track-type">Solo Piano · Jacques</span>
+  </div>
+
+  <div class="player-controls">
+    <!-- Previous -->
+    <button class="ctrl-btn" aria-label="Previous">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 3v10M13 3L7 8l6 5V3z" stroke="#f0ede8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <!-- Play / Pause -->
+    <button class="ctrl-btn ctrl-play-pause" aria-label="Pause">
+      <!-- Pause bars to indicate "currently playing" -->
+      <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+        <rect x="1" y="1" width="3.5" height="12" rx="1.5" fill="#f0ede8" opacity="0.85"/>
+        <rect x="7.5" y="1" width="3.5" height="12" rx="1.5" fill="#f0ede8" opacity="0.85"/>
+      </svg>
+    </button>
+    <!-- Next -->
+    <button class="ctrl-btn" aria-label="Next">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M13 3v10M3 3l6 5-6 5V3z" stroke="#f0ede8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Waveform visualizer placeholder -->
+  <div class="player-waveform" id="waveform" aria-hidden="true"></div>
+
+  <div class="player-time">1:04 / 4:22</div>
+
+  <!-- Volume icon -->
+  <button class="ctrl-btn" style="opacity:0.4;" aria-label="Volume">
+    <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+      <path d="M1 5h3l5-4v14l-5-4H1V5z" stroke="#f0ede8" stroke-width="1.1" stroke-linejoin="round" fill="none"/>
+      <path d="M13 4c1.5 1.2 2.5 2.9 2.5 4.5s-1 3.3-2.5 4.5" stroke="#f0ede8" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+      <path d="M15.5 1.5c2.3 1.8 3.8 4.4 3.8 7s-1.5 5.2-3.8 7" stroke="#f0ede8" stroke-width="1.1" stroke-linecap="round" fill="none" opacity="0.5"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  // Generate waveform bars from JS for clean randomness without server
+  (function() {
+    const wf = document.getElementById('waveform');
+    const heights = [14,22,10,30,18,8,26,12,34,20,10,28,16,6,24,14,32,18,8,26,12,38,22,10,30,16,8,28,20,12,36,18,6,24,14,30,10,22,16,8,28];
+    heights.forEach(function(h, i) {
+      const bar = document.createElement('span');
+      const progress = (i / heights.length);
+      const played = progress < 0.26; // ~1:04 / 4:22 played
+      bar.style.height = h + 'px';
+      bar.style.opacity = played ? '0.9' : '0.3';
+      bar.style.background = played
+        ? 'linear-gradient(to top, #c8873a, #8a6fc8)'
+        : 'linear-gradient(to top, #3a3630, #5a5450)';
+      bar.style.transition = 'opacity 0.3s';
+      wf.appendChild(bar);
+    });
+  })();
+
+  // Begin Listening interaction
+  function beginListening() {
+    var name = document.getElementById('heroName');
+    var hero = document.getElementById('hero');
+    var bar  = document.getElementById('playerBar');
+    var btn  = document.getElementById('beginBtn');
+
+    // Dissolve name into field
+    name.classList.add('dissolved');
+
+    // Brighten hero field
+    hero.classList.add('listening');
+
+    // Fade out the button
+    btn.style.transition = 'opacity 0.8s ease';
+    btn.style.opacity = '0';
+
+    // Slide up the player bar after a short delay
+    setTimeout(function() {
+      bar.classList.add('visible');
+    }, 700);
+  }
+
+  // Subtle scroll-reveal for panels (no IntersectionObserver needed — just animate in on load for the static render)
+  // On load, everything below fold already looks good with CSS.
+</script>
+</body>
+</html>

@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Jacques — Base A Dreamscape-Led</title>
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep:    #0f0805;
+    --bg-mid:     #160d08;
+    --bg-shadow:  #241510;
+    --amber:      #c8893a;
+    --amber-hot:  #e8b060;
+    --amber-aged: #a06828;
+    --glass-bg:   rgba(255, 235, 210, 0.04);
+    --glass-bg2:  rgba(255, 235, 210, 0.08);
+    --glass-bd:   rgba(200, 160, 100, 0.12);
+    --glass-hi:   rgba(255, 220, 160, 0.06);
+    --text-1:     #f0e8dc;
+    --text-2:     #8a7a68;
+    --wood-dark:  #1e1008;
+    --wood-mid:   #3c2010;
+    --wood-lit:   #6c3d18;
+    --r-card:     16px;
+    --r-panel:    20px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-1);
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── Wood Pillar — left edge ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 8%,
+      var(--wood-mid) 25%,
+      var(--wood-lit) 48%,
+      var(--wood-mid) 72%,
+      var(--wood-dark) 92%,
+      transparent 100%
+    );
+    opacity: 0.65;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* ─── Ambient Warm Field (fixed, behind everything) ─── */
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Layer 1 — slow warm amber drift */
+  .ambient-field::before {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(ellipse 58% 42% at 32% 58%, rgba(200, 137, 58, 0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 42% 52% at 68% 32%, rgba(160, 104, 40, 0.12) 0%, transparent 68%),
+      radial-gradient(ellipse 32% 32% at 52% 82%, rgba(120, 70, 20, 0.09) 0%, transparent 60%);
+    animation: driftWarm 14s ease-in-out infinite alternate;
+  }
+
+  /* Layer 2 — slow deep amber drift (offset) */
+  .ambient-field::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(ellipse 48% 55% at 62% 42%, rgba(160, 104, 40, 0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 52% 38% at 28% 68%, rgba(120, 70, 20, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 38% 28% at 78% 78%, rgba(200, 137, 58, 0.07) 0%, transparent 55%);
+    animation: driftCool 18s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes driftWarm {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 1.0; }
+    33%  { transform: translate(4%,  -3%)   scale(1.03); }
+    66%  { transform: translate(-3%,  5%)   scale(0.97); }
+    100% { transform: translate(2%,  -6%)   scale(1.05); opacity: 0.82; }
+  }
+  @keyframes driftCool {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 0.88; }
+    40%  { transform: translate(-5%,  3%)   scale(1.04); }
+    70%  { transform: translate(4%,  -4%)   scale(0.96); }
+    100% { transform: translate(-2%,  6%)   scale(1.06); opacity: 1.0; }
+  }
+
+  /* ─── Scroll container ─── */
+  .scroll-root {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ─── Section base ─── */
+  section { position: relative; width: 100%; }
+
+  /* ─── Nav ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 28px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.55);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 38px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--text-1); }
+
+  /* ─── Hero Section ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-deep);
+  }
+
+  /* Ambient base warm glow behind hero — Variant 4 heritage */
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 680px; height: 680px;
+    background: radial-gradient(ellipse at center,
+      rgba(200, 137, 58, 0.13) 0%,
+      rgba(160, 104, 40, 0.07) 45%,
+      transparent 72%
+    );
+    border-radius: 50%;
+    animation: centerPulse 6s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes centerPulse {
+    0%   { opacity: 0.65; transform: translate(-50%, -50%) scale(0.93); }
+    100% { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.08); }
+  }
+
+  /* Spotlight cone descending from above — Variant 2 drama layer */
+  .spotlight-cone {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      /* hot narrow beam from top */
+      radial-gradient(
+        ellipse 22% 52% at 50% 0%,
+        rgba(232, 176, 96, 0.20) 0%,
+        rgba(200, 137, 58, 0.12) 38%,
+        transparent 78%
+      ),
+      /* wide ambient cone — softer */
+      radial-gradient(
+        ellipse 50% 65% at 50% 0%,
+        rgba(200, 137, 58, 0.09) 0%,
+        transparent 65%
+      );
+    animation: coneRise 2.2s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes coneRise {
+    0%   { opacity: 0; }
+    35%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Spotlight floor pool under the name */
+  .spotlight-pool {
+    position: absolute;
+    left: 50%;
+    top: 54%;
+    transform: translateX(-50%);
+    width: 580px;
+    height: 160px;
+    background: radial-gradient(
+      ellipse 100% 100% at 50% 25%,
+      rgba(200, 137, 58, 0.10) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: poolRise 2.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes poolRise {
+    0%   { opacity: 0; }
+    55%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Hero name */
+  .hero-eyebrow {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.44em;
+    text-transform: uppercase;
+    color: rgba(138, 122, 104, 0.45);
+    font-weight: 300;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 5;
+  }
+
+  .hero-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 7.8vw;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 5;
+    text-shadow:
+      0 0 60px rgba(232, 176, 96, 0.38),
+      0 0 120px rgba(200, 137, 58, 0.22),
+      0 0 200px rgba(160, 104, 40, 0.10);
+    animation: nameFloat 5s ease-in-out infinite alternate;
+    transition: opacity 1.2s ease, filter 1.2s ease;
+  }
+
+  @keyframes nameFloat {
+    0%   { transform: translateY(0px); }
+    100% { transform: translateY(-5px); }
+  }
+
+  /* Dissolved state — triggered by JS */
+  .hero-name.dissolved {
+    opacity: 0;
+    filter: blur(18px);
+  }
+
+  /* Vertical amber divider line */
+  .hero-divider {
+    width: 1px;
+    height: 38px;
+    background: linear-gradient(to bottom,
+      rgba(200, 137, 58, 0.5),
+      rgba(200, 137, 58, 0.10),
+      transparent
+    );
+    margin: 30px auto 32px;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Begin listening CTA */
+  .begin-btn {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.45);
+    font-weight: 300;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    padding: 10px 0;
+    transition: color 0.4s ease, opacity 0.8s ease;
+  }
+  .begin-btn::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right,
+      transparent,
+      rgba(200, 137, 58, 0.35),
+      transparent
+    );
+    margin-top: 6px;
+    transition: background 0.4s ease;
+  }
+  .begin-btn:hover {
+    color: rgba(240, 232, 220, 0.85);
+  }
+  .begin-btn:hover::after {
+    background: linear-gradient(to right,
+      transparent,
+      rgba(232, 176, 96, 0.70),
+      transparent
+    );
+  }
+
+  /* Listening state — field brightens */
+  #hero.listening::before {
+    opacity: 1;
+    animation: none;
+    transform: translate(-50%, -50%) scale(1.30);
+    background: radial-gradient(ellipse at center,
+      rgba(200, 137, 58, 0.22) 0%,
+      rgba(160, 104, 40, 0.12) 45%,
+      transparent 72%
+    );
+    transition: all 1.6s ease;
+  }
+
+  /* Scroll hint */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: hintAppear 1s ease-out 3.5s forwards;
+    z-index: 5;
+  }
+  @keyframes hintAppear { to { opacity: 0.32; } }
+  .scroll-hint span {
+    font-size: 9px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    font-family: system-ui, Arial, sans-serif;
+    font-weight: 300;
+  }
+  .scroll-hint-line {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(200, 137, 58, 0.3), transparent);
+    animation: scrollLinePulse 2.4s ease-in-out 3.5s infinite;
+  }
+  @keyframes scrollLinePulse {
+    0%, 100% { opacity: 0.25; }
+    50%       { opacity: 0.65; }
+  }
+
+  /* ─── Section shared styles ─── */
+  .section-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.55);
+    font-family: system-ui, Arial, sans-serif;
+    font-weight: 300;
+    margin-bottom: 6px;
+  }
+  .section-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: rgba(200, 137, 58, 0.35);
+    vertical-align: middle;
+    margin-right: 14px;
+  }
+
+  .section-heading {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.0rem;
+    font-weight: 400;
+    letter-spacing: 0.09em;
+    color: var(--text-1);
+    margin-bottom: 10px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    max-width: 480px;
+    line-height: 1.85;
+  }
+
+  /* ─── Library Section ─── */
+  #library-glimpse {
+    padding: 88px 140px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+  }
+
+  /* SVG ambient field for below-fold area */
+  #library-glimpse .section-ambient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  /* Track card grid — 3 columns */
+  .track-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .track-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-card);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 30px 26px 26px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 8px 32px rgba(0, 0, 0, 0.55);
+    transition: background 0.35s ease, box-shadow 0.35s ease;
+  }
+  .track-card:hover {
+    background: var(--glass-bg2);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 220, 160, 0.10),
+      0 12px 44px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Wood grain left border on each card */
+  .track-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 15%,
+      var(--wood-mid) 38%,
+      var(--wood-lit) 55%,
+      var(--wood-mid) 75%,
+      var(--wood-dark) 92%,
+      transparent 100%
+    );
+    border-radius: var(--r-card) 0 0 var(--r-card);
+    opacity: 0.60;
+  }
+
+  /* Warm micro-glow top-right corner */
+  .track-card::after {
+    content: '';
+    position: absolute;
+    top: -18px; right: -18px;
+    width: 90px; height: 90px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.09) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .track-num {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--text-2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.55;
+  }
+
+  .track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--text-1);
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+  }
+  .track-card:hover .track-title { color: var(--amber-hot); }
+
+  .track-meta {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.06em;
+  }
+
+  .track-badge {
+    display: inline-block;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.65);
+    border: 1px solid rgba(200, 137, 58, 0.22);
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-top: 12px;
+  }
+
+  /* Play glyph */
+  .track-play {
+    position: absolute;
+    bottom: 22px;
+    right: 22px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 160, 100, 0.18);
+    background: rgba(255, 235, 210, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .track-play:hover {
+    border-color: rgba(200, 137, 58, 0.55);
+    background: rgba(200, 137, 58, 0.10);
+  }
+  .track-play svg { display: block; }
+
+  /* section intro block */
+  .library-header {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─── About Panel ─── */
+  #about {
+    padding: 0 140px 120px;
+    position: relative;
+  }
+
+  .about-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 48px 52px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 52px;
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 16px 52px rgba(0, 0, 0, 0.60);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Warm amber bleed left corner */
+  .about-panel::before {
+    content: '';
+    position: absolute;
+    left: -40px; top: -40px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.09) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .about-left .section-eyebrow { margin-bottom: 14px; }
+  .about-left .section-heading { font-size: 1.8rem; }
+
+  .about-right p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.95;
+    max-width: 520px;
+  }
+  .about-right p + p { margin-top: 20px; }
+
+  /* ─── Live Section (slim glimpse) ─── */
+  #live {
+    padding: 80px 140px 80px;
+  }
+
+  .live-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 40px 48px;
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 12px 40px rgba(0, 0, 0, 0.55);
+    max-width: 680px;
+  }
+
+  .live-row {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(200, 137, 58, 0.10);
+  }
+  .live-row:last-child { border-bottom: none; }
+
+  .live-date {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 300;
+  }
+
+  .live-venue {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--text-1);
+    letter-spacing: 0.04em;
+  }
+
+  .live-location {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Amber rule underline each date */
+  .live-date-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .live-date-rule {
+    width: 24px;
+    height: 1px;
+    background: rgba(200, 137, 58, 0.45);
+  }
+
+  /* ─── Contact ─── */
+  #contact {
+    padding: 60px 140px 160px;
+    text-align: center;
+  }
+
+  .contact-inner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .contact-inner .section-eyebrow {
+    margin-bottom: 8px;
+  }
+  .contact-inner .section-eyebrow::before { display: none; }
+
+  .contact-link {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--amber);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.3s;
+  }
+  .contact-link:hover { color: var(--amber-hot); }
+
+  .contact-note {
+    font-size: 12px;
+    color: rgba(138, 122, 104, 0.45);
+    letter-spacing: 0.08em;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  /* ─── Page-bottom fade ─── */
+  .page-fade {
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--bg-deep));
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ─── Persistent Bottom Player ─── */
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: rgba(15, 8, 5, 0.82);
+    border-top: 1px solid rgba(200, 137, 58, 0.10);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 44px;
+    gap: 32px;
+    transform: translateY(100%);
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .player-bar.visible { transform: translateY(0%); }
+
+  /* Wood micro-accent left edge of player */
+  .player-wood {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--wood-dark), var(--wood-lit), var(--wood-dark));
+    border-radius: 1px;
+    opacity: 0.55;
+    flex-shrink: 0;
+  }
+
+  .player-track-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 210px;
+  }
+  .player-track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-1);
+    letter-spacing: 0.03em;
+  }
+  .player-track-type {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-top: 2px;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.50;
+    transition: opacity 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ctrl-btn:hover { opacity: 1; }
+
+  .ctrl-play-pause {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 137, 58, 0.28);
+    background: rgba(255, 235, 210, 0.03);
+    opacity: 1;
+  }
+  .ctrl-play-pause:hover {
+    background: rgba(200, 137, 58, 0.10);
+    border-color: rgba(200, 137, 58, 0.50);
+  }
+
+  /* Progress area */
+  .player-progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .player-progress-bar {
+    height: 2px;
+    background: rgba(138, 122, 104, 0.12);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .player-progress-fill {
+    height: 100%;
+    width: 24%;
+    background: linear-gradient(to right, var(--amber-aged), var(--amber), var(--amber-hot));
+    border-radius: 1px;
+  }
+
+  .player-time {
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    color: rgba(138, 122, 104, 0.40);
+    text-align: right;
+  }
+
+  /* Volume */
+  .player-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.40;
+    flex-shrink: 0;
+  }
+
+  /* ─── Waveform (generated by JS) ─── */
+  .player-waveform {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .player-waveform span {
+    display: block;
+    width: 3px;
+    border-radius: 2px;
+  }
+
+  /* ─── Subtle selection ─── */
+  ::selection {
+    background: rgba(200, 137, 58, 0.20);
+    color: var(--text-1);
+  }
+
+  /* ─── Webkit scrollbar ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: rgba(200, 137, 58, 0.14); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200, 137, 58, 0.28); }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Ambient Warm Field (fixed background) ─── -->
+<div class="ambient-field">
+  <!--
+    The ambient field layers are implemented via CSS ::before / ::after
+    on .ambient-field. An inline SVG adds a warm amber radial bloom
+    that is visible even without animation support (static frame fallback).
+  -->
+  <svg
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    style="position:absolute;inset:0;width:100%;height:100%;opacity:1;"
+    aria-hidden="true"
+  >
+    <defs>
+      <!-- Main warm amber center bloom -->
+      <radialGradient id="rg-center" cx="50%" cy="48%" r="45%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.16"/>
+        <stop offset="45%"  stop-color="#a06828" stop-opacity="0.07"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Warm left bloom -->
+      <radialGradient id="rg-left" cx="18%" cy="62%" r="40%">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Deep amber right -->
+      <radialGradient id="rg-right" cx="80%" cy="30%" r="38%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.09"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Subtle warm band — horizon feel -->
+      <linearGradient id="lg-band" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0"/>
+        <stop offset="28%"  stop-color="#c8893a" stop-opacity="0.06"/>
+        <stop offset="55%"  stop-color="#e8b060" stop-opacity="0.04"/>
+        <stop offset="80%"  stop-color="#a06828" stop-opacity="0.05"/>
+        <stop offset="100%" stop-color="#a06828" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="#0f0805"/>
+    <rect width="1440" height="900" fill="url(#rg-center)"/>
+    <rect width="1440" height="900" fill="url(#rg-left)"/>
+    <rect width="1440" height="900" fill="url(#rg-right)"/>
+    <!-- Warm horizon band, very subtle -->
+    <ellipse cx="720" cy="440" rx="920" ry="55" fill="url(#lg-band)" opacity="0.8"/>
+    <ellipse cx="720" cy="540" rx="800" ry="38" fill="url(#lg-band)" opacity="0.5" transform="rotate(-1.5 720 540)"/>
+  </svg>
+</div>
+
+<!-- ─── Navigation ─── -->
+<nav>
+  <span class="nav-brand">Jacques</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#library-glimpse">Library</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll Root ─── -->
+<div class="scroll-root">
+
+  <!-- ═══ HERO ════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <!-- Spotlight cone from above (Variant 2 drama layer) -->
+    <div class="spotlight-cone" aria-hidden="true"></div>
+    <!-- Floor pool beneath name -->
+    <div class="spotlight-pool" aria-hidden="true"></div>
+
+    <!-- Hero text -->
+    <p class="hero-eyebrow">Classical &nbsp;·&nbsp; Jazz &nbsp;·&nbsp; Composition</p>
+    <h1 class="hero-name" id="heroName">Jacques</h1>
+    <div class="hero-divider"></div>
+    <button class="begin-btn" id="beginBtn" onclick="beginListening()">
+      Begin listening
+    </button>
+
+    <!-- Scroll cue -->
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══ LIBRARY ══════════════════════════════════════════════════════ -->
+  <section id="library-glimpse">
+    <div class="library-header">
+      <p class="section-eyebrow">Library</p>
+      <h2 class="section-heading">Works</h2>
+      <p class="section-sub">Recordings, studies, and sessions — stream only. Offered as they were made: unguarded.</p>
+    </div>
+
+    <div class="track-grid">
+
+      <!-- Card 01 -->
+      <div class="track-card">
+        <p class="track-num">01</p>
+        <h3 class="track-title">Nocturne in E-flat</h3>
+        <p class="track-meta">Solo Piano &nbsp;·&nbsp; 4:22</p>
+        <div class="track-play" aria-label="Play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 02 -->
+      <div class="track-card">
+        <p class="track-num">02</p>
+        <h3 class="track-title">Blue Reverie</h3>
+        <p class="track-meta">Piano Trio &nbsp;·&nbsp; 6:08</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play" aria-label="Play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 03 -->
+      <div class="track-card">
+        <p class="track-num">03</p>
+        <h3 class="track-title">Café Trois</h3>
+        <p class="track-meta">Jazz Quartet &nbsp;·&nbsp; 5:47</p>
+        <div class="track-play" aria-label="Play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 04 -->
+      <div class="track-card">
+        <p class="track-num">04</p>
+        <h3 class="track-title">Still Water</h3>
+        <p class="track-meta">Solo Piano &nbsp;·&nbsp; 3:55</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play" aria-label="Play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card 05 — spans 2 cols for rhythm break -->
+      <div class="track-card" style="grid-column: 2 / 4;">
+        <p class="track-num">05</p>
+        <h3 class="track-title">Interlude No. 2</h3>
+        <p class="track-meta">Chamber &nbsp;·&nbsp; 2:30</p>
+        <div class="track-play" aria-label="Play">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ════════════════════════════════════════════════════════ -->
+  <section id="about">
+    <div class="about-panel">
+      <div class="about-left">
+        <p class="section-eyebrow">About</p>
+        <h2 class="section-heading">The Artist</h2>
+      </div>
+      <div class="about-right">
+        <p>
+          Jacques is a pianist and composer working at the intersection of classical tradition and jazz
+          improvisation. Trained in formal conservatory practice, his music is shaped equally by the silence
+          between notes and the warmth of late-night sessions — a sound that has found its home on stages
+          from intimate San Diego clubs to the storied backrooms of Carlsbad Village.
+        </p>
+        <p>
+          His recordings are offered here as they were made: unguarded, unhurried.
+          The unreleased sessions are available to stream because some music is better heard than preserved.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ LIVE ══════════════════════════════════════════════════════════ -->
+  <section id="live" style="padding-bottom:80px;">
+    <div style="margin-bottom:28px;">
+      <p class="section-eyebrow">Live</p>
+      <h2 class="section-heading">Upcoming</h2>
+    </div>
+    <div class="live-panel">
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jun 14</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 02</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 19</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ══════════════════════════════════════════════════════ -->
+  <section id="contact">
+    <div class="contact-inner">
+      <p class="section-eyebrow">Contact</p>
+      <a href="mailto:hello@jacquesmusic.com" class="contact-link">hello@jacquesmusic.com</a>
+      <p class="contact-note">For bookings, collaborations, and questions.</p>
+    </div>
+  </section>
+
+  <div class="page-fade"></div>
+
+</div><!-- /scroll-root -->
+
+<!-- ═══ PERSISTENT BOTTOM PLAYER ═════════════════════════════════════ -->
+<div class="player-bar" id="playerBar">
+  <!-- Wood micro-accent -->
+  <div class="player-wood"></div>
+
+  <!-- Track info -->
+  <div class="player-track-info">
+    <span class="player-track-title">Nocturne in E-flat</span>
+    <span class="player-track-type">Solo Piano &nbsp;·&nbsp; Jacques</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="player-controls">
+    <!-- Previous -->
+    <button class="ctrl-btn" aria-label="Previous">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 3v10M13 3.5L7 8l6 4.5V3.5z"
+          stroke="#f0e8dc" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <!-- Pause (playing state shown) -->
+    <button class="ctrl-btn ctrl-play-pause" aria-label="Pause">
+      <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+        <rect x="1"   y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+        <rect x="7.5" y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+      </svg>
+    </button>
+    <!-- Next -->
+    <button class="ctrl-btn" aria-label="Next">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M13 3v10M3 3.5L9 8l-6 4.5V3.5z"
+          stroke="#f0e8dc" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Waveform visualizer -->
+  <div class="player-waveform" id="waveform" aria-hidden="true"></div>
+
+  <!-- Progress + time -->
+  <div class="player-progress-wrap">
+    <div class="player-progress-bar">
+      <div class="player-progress-fill"></div>
+    </div>
+    <div class="player-time">1:04 &nbsp;·&nbsp; 4:22</div>
+  </div>
+
+  <!-- Volume -->
+  <button class="ctrl-btn player-volume" aria-label="Volume">
+    <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+      <path d="M1 5h3l5-4v14l-5-4H1V5z"
+        stroke="#f0e8dc" stroke-width="1.1" stroke-linejoin="round" fill="none"/>
+      <path d="M13 4c1.5 1.2 2.5 2.9 2.5 4.5s-1 3.3-2.5 4.5"
+        stroke="#f0e8dc" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  /* ── Waveform bars ── */
+  (function() {
+    var wf = document.getElementById('waveform');
+    var heights = [12,20,10,28,16,8,24,12,32,18,10,26,14,6,22,12,30,16,8,24,12,36,20,10,28,14,8,26,18,12,34,16,6,22,12,28,10,20,15,8,26];
+    var playedFrac = 0.24; // ~1:04 / 4:22
+    heights.forEach(function(h, i) {
+      var bar = document.createElement('span');
+      var played = (i / heights.length) < playedFrac;
+      bar.style.height = h + 'px';
+      bar.style.width = '3px';
+      bar.style.borderRadius = '2px';
+      bar.style.opacity = played ? '0.88' : '0.22';
+      bar.style.background = played
+        ? 'linear-gradient(to top, #a06828, #c8893a, #e8b060)'
+        : 'linear-gradient(to top, #241510, #3c2010)';
+      wf.appendChild(bar);
+    });
+  })();
+
+  /* ── Begin Listening interaction ── */
+  function beginListening() {
+    var name = document.getElementById('heroName');
+    var hero = document.getElementById('hero');
+    var bar  = document.getElementById('playerBar');
+    var btn  = document.getElementById('beginBtn');
+
+    // Dissolve name into warm field
+    name.classList.add('dissolved');
+
+    // Brighten field
+    hero.classList.add('listening');
+
+    // Fade out button
+    btn.style.opacity = '0';
+    btn.style.pointerEvents = 'none';
+
+    // Slide up player bar
+    setTimeout(function() {
+      bar.classList.add('visible');
+    }, 750);
+  }
+
+  /* ── Show player on scroll (if Begin wasn't clicked) ── */
+  window.addEventListener('scroll', function() {
+    var bar = document.getElementById('playerBar');
+    if (window.scrollY > 140 && !bar.classList.contains('visible')) {
+      bar.classList.add('visible');
+    }
+  }, { passive: true });
+</script>
+
+</body>
+</html>

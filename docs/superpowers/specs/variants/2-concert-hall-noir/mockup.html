@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jacques — Concert-Hall Noir</title>
+<style>
+  /* ─── Reset & Base ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:        #0a0a0b;
+    --deep-shadow:  #111114;
+    --amber:        #c8922a;
+    --amber-hot:    #f0c060;
+    --frost-bg:     rgba(14, 16, 22, 0.55);
+    --frost-border: rgba(184, 196, 208, 0.08);
+    --cool-text:    #7a8494;
+    --hi-text:      #e8e2d6;
+    --wood-dark:    #2c1f14;
+    --wood-lit:     #5c3d22;
+    --serif:        Georgia, 'Times New Roman', serif;
+    --sans:         system-ui, -apple-system, Arial, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--black);
+    color: var(--hi-text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.8;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* ─── Wood Column Accent ────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 100vh;
+    z-index: 10;
+    background: repeating-linear-gradient(
+      180deg,
+      var(--wood-dark)   0px,
+      #231810           4px,
+      var(--wood-dark)   7px,
+      #1e140c           12px,
+      var(--wood-dark)  16px,
+      #2a1c12           20px,
+      var(--wood-dark)  24px
+    );
+    /* spotlight hits the column — gradient left-to-right */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.9) 100%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.9) 100%);
+    pointer-events: none;
+  }
+
+  /* ─── Hero Section ──────────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--black);
+  }
+
+  /* Base ambient dark gradient */
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 38%,
+      rgba(200, 146, 42, 0.12) 0%,
+      rgba(200, 146, 42, 0.04) 35%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  /* Spotlight beam — the single light */
+  .spotlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      /* hot center beam */
+      radial-gradient(
+        ellipse 28% 45% at 50% 5%,
+        rgba(240, 192, 96, 0.18) 0%,
+        rgba(200, 146, 42, 0.10) 40%,
+        transparent 80%
+      ),
+      /* wide ambient cone */
+      radial-gradient(
+        ellipse 55% 70% at 50% 0%,
+        rgba(200, 146, 42, 0.08) 0%,
+        transparent 65%
+      );
+    animation: spotlightRise 1.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes spotlightRise {
+    0%   { opacity: 0; }
+    30%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Floor pool beneath name */
+  .spotlight-pool {
+    position: absolute;
+    left: 50%;
+    top: 58%;
+    transform: translateX(-50%);
+    width: 520px;
+    height: 140px;
+    background: radial-gradient(
+      ellipse 100% 100% at 50% 20%,
+      rgba(200, 146, 42, 0.09) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    border-radius: 50%;
+    animation: poolRise 2s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes poolRise {
+    0%   { opacity: 0; }
+    50%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 28px 60px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 40px;
+  }
+
+  .nav a {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--cool-text);
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s;
+  }
+
+  .nav a:hover { color: var(--amber); }
+
+  /* Hero text block */
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: contentAppear 2.2s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes contentAppear {
+    0%   { opacity: 0; }
+    40%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 9px;
+    letter-spacing: 0.40em;
+    text-transform: uppercase;
+    color: rgba(122, 132, 148, 0.5);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .hero-name {
+    font-family: var(--serif);
+    font-size: 108px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--hi-text);
+    line-height: 1;
+    margin-bottom: 52px;
+    /* very subtle warm text-shadow — the light touching the letterforms */
+    text-shadow:
+      0 0 80px rgba(200, 146, 42, 0.25),
+      0 0 160px rgba(200, 146, 42, 0.10);
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(200,146,42,0.4), transparent);
+    margin: 0 auto 36px;
+  }
+
+  .begin-btn {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: rgba(232, 226, 214, 0.55);
+    font-weight: 300;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px 0;
+    position: relative;
+    transition: color 0.4s;
+  }
+
+  .begin-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(200,146,42,0.3), transparent);
+    transform: scaleX(0);
+    transition: transform 0.5s ease;
+  }
+
+  .begin-btn:hover {
+    color: rgba(240, 192, 96, 0.85);
+  }
+
+  .begin-btn:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Pulse ring on click */
+  .begin-btn.pulse-active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(200, 146, 42, 0.15);
+    transform: translate(-50%, -50%);
+    animation: pulseRing 1s ease-out forwards;
+  }
+
+  @keyframes pulseRing {
+    0%   { width: 0; height: 0; opacity: 0.6; }
+    100% { width: 240px; height: 240px; opacity: 0; }
+  }
+
+  /* Scroll cue */
+  .scroll-cue {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: cueAppear 1s ease-out 3s forwards;
+  }
+
+  @keyframes cueAppear {
+    to { opacity: 1; }
+  }
+
+  .scroll-cue span {
+    font-family: var(--sans);
+    font-size: 8px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: rgba(122, 132, 148, 0.35);
+    font-weight: 300;
+  }
+
+  .scroll-cue-line {
+    width: 1px;
+    height: 32px;
+    background: linear-gradient(to bottom, rgba(122, 132, 148, 0.25), transparent);
+    animation: scrollPulse 2.4s ease-in-out 3s infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 0.7; }
+  }
+
+  /* ─── Below-fold Hint ───────────────────────────────────────────── */
+  /* A faint bleed from the section below creeps into view */
+  .below-fold-hint {
+    position: relative;
+    background: var(--deep-shadow);
+    padding: 80px 0 0;
+    overflow: hidden;
+  }
+
+  /* Ambient fade at very top of below-fold */
+  .below-fold-hint::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, var(--black), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: var(--sans);
+    font-size: 9px;
+    letter-spacing: 0.40em;
+    text-transform: uppercase;
+    color: rgba(122, 132, 148, 0.35);
+    font-weight: 300;
+    margin-bottom: 48px;
+    padding-left: 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: rgba(200, 146, 42, 0.3);
+    vertical-align: middle;
+    margin-right: 16px;
+  }
+
+  /* ─── Library Preview ───────────────────────────────────────────── */
+  .library-preview {
+    padding: 0 60px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+  }
+
+  .library-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0.10em;
+    color: rgba(232, 226, 214, 0.55);
+  }
+
+  .library-count {
+    font-family: var(--sans);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(122, 132, 148, 0.4);
+  }
+
+  /* Track cards — frosted glass */
+  .track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .track-card {
+    background: var(--frost-bg);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--frost-border);
+    border-radius: 3px;
+    padding: 20px 28px;
+    display: grid;
+    grid-template-columns: 36px 1fr auto auto;
+    align-items: center;
+    gap: 20px;
+    transition: background 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+
+  .track-card:hover {
+    background: rgba(20, 22, 32, 0.7);
+    border-color: rgba(200, 146, 42, 0.12);
+  }
+
+  .track-num {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: rgba(122, 132, 148, 0.3);
+    letter-spacing: 0.08em;
+    text-align: right;
+  }
+
+  .track-card:hover .track-num { display: none; }
+
+  .track-play {
+    display: none;
+    width: 18px;
+    height: 18px;
+    position: relative;
+  }
+
+  .track-card:hover .track-play { display: block; }
+
+  .track-play::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    border-style: solid;
+    border-width: 7px 0 7px 13px;
+    border-color: transparent transparent transparent var(--amber);
+  }
+
+  .track-info { }
+
+  .track-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--hi-text);
+    letter-spacing: 0.02em;
+    transition: color 0.3s;
+  }
+
+  .track-card:hover .track-title { color: var(--amber-hot); }
+
+  .track-subtitle {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--cool-text);
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .track-badge {
+    font-family: var(--sans);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(200, 146, 42, 0.5);
+    border: 1px solid rgba(200, 146, 42, 0.18);
+    border-radius: 2px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .track-dur {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: rgba(122, 132, 148, 0.4);
+    letter-spacing: 0.06em;
+    width: 36px;
+    text-align: right;
+  }
+
+  /* Fade-out bottom of page — the world continues */
+  .page-fade {
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--black));
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─── Persistent Bottom Player ──────────────────────────────────── */
+  .player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    height: 68px;
+    background: rgba(10, 10, 11, 0.75);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(184, 196, 208, 0.06);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0 60px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .player.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .player-track {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .player-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--hi-text);
+    letter-spacing: 0.02em;
+  }
+
+  .player-sub {
+    font-family: var(--sans);
+    font-size: 10px;
+    color: var(--cool-text);
+    letter-spacing: 0.08em;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--cool-text);
+    transition: color 0.3s;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  .ctrl-btn:hover { color: var(--amber); }
+
+  .ctrl-play {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 146, 42, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .ctrl-play:hover {
+    border-color: var(--amber);
+    background: rgba(200, 146, 42, 0.06);
+  }
+
+  .ctrl-play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 7px 0 7px 12px;
+    border-color: transparent transparent transparent var(--amber);
+    margin-left: 2px;
+  }
+
+  /* paused state — two bars */
+  .ctrl-pause-icon {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .ctrl-pause-icon span {
+    display: block;
+    width: 3px;
+    height: 14px;
+    background: var(--amber);
+    border-radius: 1px;
+  }
+
+  .player-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .progress-bar {
+    width: 180px;
+    height: 2px;
+    background: rgba(122, 132, 148, 0.12);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 32%;
+    background: linear-gradient(to right, var(--amber), var(--amber-hot));
+    border-radius: 1px;
+    transition: width 0.3s;
+  }
+
+  .progress-time {
+    font-family: var(--sans);
+    font-size: 9px;
+    color: rgba(122, 132, 148, 0.35);
+    letter-spacing: 0.12em;
+  }
+
+  /* ─── Selection: dark highlight ────────────────────────────────── */
+  ::selection {
+    background: rgba(200, 146, 42, 0.2);
+    color: var(--hi-text);
+  }
+
+  /* ─── Scrollbar (webkit) ────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: rgba(200, 146, 42, 0.15); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200, 146, 42, 0.30); }
+
+</style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="#about">About</a>
+    <a href="#library">Library</a>
+    <a href="#live">Live</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- ═══ HERO ═══════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="spotlight"></div>
+    <div class="spotlight-pool"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Classical &nbsp;·&nbsp; Jazz &nbsp;·&nbsp; Composition</p>
+
+      <h1 class="hero-name">Jacques</h1>
+
+      <div class="hero-divider"></div>
+
+      <button class="begin-btn" id="beginBtn" onclick="handleBegin(this)">
+        Begin listening
+      </button>
+    </div>
+
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-cue-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══ BELOW-FOLD HINT (Library glimpse) ═════════════════════════ -->
+  <div class="below-fold-hint">
+    <div class="section-label">Library</div>
+
+    <div class="library-preview">
+      <div class="library-header">
+        <h2 class="library-title">Works</h2>
+        <span class="library-count">12 recordings &nbsp;·&nbsp; stream only</span>
+      </div>
+
+      <div class="track-list">
+
+        <div class="track-card">
+          <div class="track-num">01</div>
+          <div class="track-play"></div>
+          <div class="track-info">
+            <div class="track-title">Nocturne in E-flat</div>
+            <div class="track-subtitle">Solo Piano &nbsp;·&nbsp; 2024</div>
+          </div>
+          <span class="track-badge">Unreleased</span>
+          <div class="track-dur">4:32</div>
+        </div>
+
+        <div class="track-card">
+          <div class="track-num">02</div>
+          <div class="track-play"></div>
+          <div class="track-info">
+            <div class="track-title">Blue Reverie</div>
+            <div class="track-subtitle">Piano &amp; Bass &nbsp;·&nbsp; 2023</div>
+          </div>
+          <span class="track-badge" style="opacity:0; pointer-events:none;">—</span>
+          <div class="track-dur">6:18</div>
+        </div>
+
+        <div class="track-card">
+          <div class="track-num">03</div>
+          <div class="track-play"></div>
+          <div class="track-info">
+            <div class="track-title">Café Trois</div>
+            <div class="track-subtitle">Trio &nbsp;·&nbsp; Live Recording &nbsp;·&nbsp; 2023</div>
+          </div>
+          <span class="track-badge">Unreleased</span>
+          <div class="track-dur">5:47</div>
+        </div>
+
+        <div class="track-card">
+          <div class="track-num">04</div>
+          <div class="track-play"></div>
+          <div class="track-info">
+            <div class="track-title">Pavane for a Still Morning</div>
+            <div class="track-subtitle">Solo Piano &nbsp;·&nbsp; 2022</div>
+          </div>
+          <span class="track-badge" style="opacity:0; pointer-events:none;">—</span>
+          <div class="track-dur">3:55</div>
+        </div>
+
+        <div class="track-card">
+          <div class="track-num">05</div>
+          <div class="track-play"></div>
+          <div class="track-info">
+            <div class="track-title">Late Suite, Mvt. II</div>
+            <div class="track-subtitle">Piano &amp; Strings &nbsp;·&nbsp; 2024</div>
+          </div>
+          <span class="track-badge">Unreleased</span>
+          <div class="track-dur">7:03</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page-fade"></div>
+  </div>
+
+  <!-- ═══ PERSISTENT PLAYER ═══════════════════════════════════════── -->
+  <div class="player" id="player">
+    <div class="player-track">
+      <div class="player-title">Nocturne in E-flat</div>
+      <div class="player-sub">Jacques &nbsp;·&nbsp; Solo Piano</div>
+    </div>
+
+    <div class="player-controls">
+      <button class="ctrl-btn" title="Previous">
+        <!-- Prev icon: thin left-pointing double chevron -->
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M9 4L5 8l4 4M13 4L9 8l4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button class="ctrl-play" id="playPauseBtn" onclick="togglePlay()" title="Play/Pause">
+        <div class="ctrl-play-icon" id="playIcon"></div>
+      </button>
+
+      <button class="ctrl-btn" title="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M7 4l4 4-4 4M3 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="player-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-time" id="progressTime">1:27 &nbsp;·&nbsp; 4:32</div>
+    </div>
+  </div>
+
+  <script>
+    // ── Begin listening
+    function handleBegin(btn) {
+      btn.classList.add('pulse-active');
+      setTimeout(() => btn.classList.remove('pulse-active'), 1000);
+
+      // Show the player after a brief theatrical pause
+      setTimeout(() => {
+        document.getElementById('player').classList.add('visible');
+      }, 600);
+    }
+
+    // ── Play / pause toggle (visual only)
+    var playing = true;
+
+    function togglePlay() {
+      playing = !playing;
+      var icon = document.getElementById('playIcon');
+      if (playing) {
+        icon.className = 'ctrl-play-icon';
+        icon.innerHTML = '';
+      } else {
+        // Show pause bars
+        icon.className = 'ctrl-pause-icon';
+        icon.innerHTML = '<span></span><span></span>';
+      }
+    }
+
+    // ── Gentle progress animation (cosmetic)
+    var progress = 32;
+    var seconds = 87; // 1:27 in seconds
+    var totalSeconds = 272; // 4:32
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function formatTime(s) {
+      return Math.floor(s / 60) + ':' + pad(s % 60);
+    }
+
+    setInterval(function() {
+      if (!playing) return;
+      seconds += 1;
+      if (seconds > totalSeconds) seconds = 0;
+      progress = (seconds / totalSeconds) * 100;
+      var fill = document.getElementById('progressFill');
+      var time = document.getElementById('progressTime');
+      if (fill) fill.style.width = progress + '%';
+      if (time) time.textContent = formatTime(seconds) + ' · ' + formatTime(totalSeconds);
+    }, 1000);
+
+    // ── Player shows on scroll if Begin wasn't clicked
+    window.addEventListener('scroll', function() {
+      var player = document.getElementById('player');
+      if (window.scrollY > 120 && !player.classList.contains('visible')) {
+        player.classList.add('visible');
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>

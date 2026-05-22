@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Jacques — B2 Concert &amp; Collection</title>
+<style>
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep:    #0f0805;
+  --bg-mid:     #160d08;
+  --amber:      #c8893a;
+  --amber-hot:  #e8b060;
+  --amber-aged: #a06828;
+  --glass-bg:   rgba(255, 235, 210, 0.04);
+  --glass-bg2:  rgba(255, 235, 210, 0.08);
+  --glass-bd:   rgba(200, 160, 100, 0.12);
+  --glass-hi:   rgba(255, 220, 160, 0.06);
+  --text-1:     #f0e8dc;
+  --text-2:     #8a7a68;
+  --wood-dark:  #1e1008;
+  --wood-mid:   #3c2010;
+  --wood-lit:   #6c3d18;
+  --r-panel:    16px;
+  --r-card:     14px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-1);
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── Symmetric wood pillars — A1 formal framing ─── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--wood-dark) 8%,
+    var(--wood-mid) 28%,
+    var(--wood-lit) 50%,
+    var(--wood-mid) 72%,
+    var(--wood-dark) 92%,
+    transparent 100%
+  );
+  opacity: 0.50;
+  z-index: 50;
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--wood-dark) 8%,
+    var(--wood-mid) 28%,
+    var(--wood-lit) 50%,
+    var(--wood-mid) 72%,
+    var(--wood-dark) 92%,
+    transparent 100%
+  );
+  opacity: 0.50;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ─── Ambient Warm Field ─── */
+.ambient-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient-field::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(ellipse 58% 42% at 50% 55%, rgba(200,137,58,0.13) 0%, transparent 70%),
+    radial-gradient(ellipse 38% 50% at 50% 28%, rgba(160,104,40,0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 28% 28% at 50% 82%, rgba(120,70,20,0.07) 0%, transparent 60%);
+  animation: driftWarm 14s ease-in-out infinite alternate;
+}
+.ambient-field::after {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(ellipse 45% 52% at 50% 44%, rgba(160,104,40,0.08) 0%, transparent 62%),
+    radial-gradient(ellipse 50% 35% at 50% 70%, rgba(120,70,20,0.07) 0%, transparent 58%);
+  animation: driftCool 18s ease-in-out infinite alternate-reverse;
+}
+@keyframes driftWarm {
+  0%   { transform: translate(0%,0%) scale(1.00); opacity: 1.0; }
+  33%  { transform: translate(1%,-2%) scale(1.02); }
+  66%  { transform: translate(-1%,3%) scale(0.98); }
+  100% { transform: translate(1%,-4%) scale(1.04); opacity: 0.84; }
+}
+@keyframes driftCool {
+  0%   { transform: translate(0%,0%) scale(1.00); opacity: 0.88; }
+  40%  { transform: translate(-2%,2%) scale(1.03); }
+  70%  { transform: translate(2%,-3%) scale(0.97); }
+  100% { transform: translate(-1%,4%) scale(1.05); opacity: 1.0; }
+}
+
+/* ─── Scroll container ─── */
+.scroll-root { position: relative; z-index: 10; }
+section { position: relative; width: 100%; }
+
+/* ─── Navigation — A1 symmetrical formal ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 90;
+  padding: 32px 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(240,232,220,0.42);
+}
+.nav-links {
+  display: flex;
+  gap: 42px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 9.5px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-decoration: none;
+  font-weight: 300;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--text-1); }
+
+/* ═══════════════════════════════════════════════════════════
+   HERO — A1 Proscenium Stage (centered, symmetrical)
+═══════════════════════════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 40px 80px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+/* Center ambient bloom */
+#hero::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 720px; height: 640px;
+  background: radial-gradient(ellipse at center,
+    rgba(200,137,58,0.12) 0%,
+    rgba(160,104,40,0.06) 42%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: centerPulse 7s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes centerPulse {
+  0%   { opacity: 0.55; transform: translate(-50%,-50%) scale(0.94); }
+  100% { opacity: 1.0;  transform: translate(-50%,-50%) scale(1.07); }
+}
+
+/* Proscenium follow-spot — tight cone from directly above center */
+.spotlight-cone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse 17% 56% at 50% 0%,
+      rgba(232,176,96,0.22) 0%,
+      rgba(200,137,58,0.13) 36%,
+      transparent 76%
+    ),
+    radial-gradient(ellipse 44% 62% at 50% 0%,
+      rgba(200,137,58,0.08) 0%,
+      transparent 62%
+    );
+  animation: coneRise 2.4s ease-out forwards;
+  opacity: 0;
+}
+@keyframes coneRise {
+  0%   { opacity: 0; }
+  30%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Stage-floor elliptical apron pool */
+.spotlight-pool {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  transform: translateX(-50%);
+  width: 520px;
+  height: 130px;
+  background: radial-gradient(ellipse 100% 100% at 50% 20%,
+    rgba(200,137,58,0.09) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: poolRise 3.0s ease-out forwards;
+  opacity: 0;
+}
+@keyframes poolRise {
+  0%   { opacity: 0; }
+  55%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Artist name — A1: still, tracked, on program */
+.hero-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 7.4vw;
+  font-weight: 400;
+  letter-spacing: 0.38em;
+  color: var(--text-1);
+  text-transform: uppercase;
+  position: relative;
+  z-index: 5;
+  text-shadow:
+    0 0 50px rgba(232,176,96,0.32),
+    0 0 100px rgba(200,137,58,0.18),
+    0 0 180px rgba(160,104,40,0.09);
+  transition: opacity 1.4s ease, filter 1.4s ease;
+}
+.hero-name.dissolved { opacity: 0; filter: blur(22px); }
+
+/* Stage apron rule — A1 horizontal amber hairline */
+.hero-apron {
+  width: min(520px, 55vw);
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(200,137,58,0.18) 8%,
+    rgba(200,137,58,0.55) 28%,
+    rgba(232,176,96,0.65) 50%,
+    rgba(200,137,58,0.55) 72%,
+    rgba(200,137,58,0.18) 92%,
+    transparent 100%
+  );
+  margin: 36px auto 0;
+  position: relative;
+  z-index: 5;
+}
+
+/* Discipline label beneath rule */
+.hero-discipline {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(138,122,104,0.40);
+  font-weight: 300;
+  margin-top: 22px;
+  position: relative;
+  z-index: 5;
+}
+
+/* Begin listening — A1 style with vinyl-icon nod to A4 */
+.begin-btn {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: rgba(240,232,220,0.38);
+  font-weight: 300;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+  padding: 12px 0;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  transition: color 0.4s, opacity 0.8s;
+}
+.begin-btn:hover { color: rgba(240,232,220,0.80); }
+.begin-btn-rule {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(to right,
+    transparent, rgba(200,137,58,0.30), transparent
+  );
+  margin-top: 7px;
+  transition: background 0.4s;
+}
+.begin-btn:hover .begin-btn-rule {
+  background: linear-gradient(to right,
+    transparent, rgba(232,176,96,0.65), transparent
+  );
+}
+
+/* Tiny vinyl icon — A4 motif in A1 hero */
+.vinyl-icon-sm {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(200,137,58,0.50);
+  position: relative;
+  flex-shrink: 0;
+}
+.vinyl-icon-sm::before {
+  content: '';
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  border: 0.75px solid rgba(200,137,58,0.35);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+.vinyl-icon-sm::after {
+  content: '';
+  position: absolute;
+  width: 2.5px; height: 2.5px;
+  border-radius: 50%;
+  background: var(--amber);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  opacity: 0.80;
+}
+
+/* Scroll cue */
+.scroll-hint {
+  position: absolute;
+  bottom: 44px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: hintAppear 1s ease-out 3.8s forwards;
+  z-index: 5;
+}
+@keyframes hintAppear { to { opacity: 0.28; } }
+.scroll-hint span {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 8.5px;
+  letter-spacing: 0.30em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-style: italic;
+}
+.scroll-hint-line {
+  width: 1px; height: 28px;
+  background: linear-gradient(to bottom, rgba(200,137,58,0.28), transparent);
+  animation: scrollLinePulse 2.6s ease-in-out 3.8s infinite;
+}
+@keyframes scrollLinePulse {
+  0%, 100% { opacity: 0.20; }
+  50%       { opacity: 0.60; }
+}
+
+/* ─── Shared section headings — A1 centered style ─── */
+.section-eyebrow {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.40em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.52);
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 7px;
+}
+.section-heading {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.80rem;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  color: var(--text-1);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.section-rule {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent, rgba(200,137,58,0.45), transparent
+  );
+  margin: 0 auto 40px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIBRARY — A4 Vinyl Tile Grid, gallery paced
+═══════════════════════════════════════════════════════════ */
+#library {
+  padding: 100px 100px 80px;
+}
+
+.library-header {
+  margin-bottom: 44px;
+  text-align: center;
+}
+.library-header .section-sub {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: rgba(138,122,104,0.55);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+/* 4-column album grid — A4 vernacular, B2 breathing room */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Wide tile spanning 2 columns */
+.album-tile.wide {
+  grid-column: span 2;
+  aspect-ratio: 2 / 1;
+}
+
+/* ── Album Tile — A4 framed vinyl card ── */
+.album-tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  cursor: pointer;
+  /* Wood frame shadow rings */
+  box-shadow:
+    0 0 0 4px var(--wood-dark),
+    0 0 0 7px var(--wood-mid),
+    0 0 0 10px var(--wood-lit),
+    0 0 0 12px var(--wood-mid),
+    0 0 0 15px var(--wood-dark),
+    0 18px 50px rgba(0,0,0,0.72);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+.album-tile:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 0 0 4px var(--wood-dark),
+    0 0 0 7px var(--wood-mid),
+    0 0 0 10px var(--wood-lit),
+    0 0 0 12px var(--wood-mid),
+    0 0 0 15px var(--wood-dark),
+    0 28px 70px rgba(0,0,0,0.82);
+}
+
+/* Frosted glass surface */
+.album-tile-inner {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid var(--glass-bd);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+  transition: background 0.35s;
+}
+.album-tile:hover .album-tile-inner { background: var(--glass-bg2); }
+
+/* Warm ambient glow — lower left of each tile */
+.album-tile-glow {
+  position: absolute;
+  bottom: -30px; left: -30px;
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(200,137,58,0.11) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Vinyl motif — top-right quadrant */
+.vinyl-motif {
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 128px; height: 128px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,200,100,0.00) 0%,
+      rgba(255,200,100,0.00) 28%,
+      rgba(255,200,100,0.05) 30%,
+      rgba(255,200,100,0.00) 32%,
+      rgba(255,200,100,0.04) 36%,
+      rgba(255,200,100,0.00) 39%,
+      rgba(255,200,100,0.035) 43%,
+      rgba(255,200,100,0.00) 46%
+    ),
+    rgba(10,5,2,0.52);
+  border: 1px solid rgba(200,137,58,0.09);
+  opacity: 0.60;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.35s;
+}
+.album-tile:hover .vinyl-motif { opacity: 0.92; }
+.vinyl-motif::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(139,58,26,0.62) 0%,
+    rgba(200,137,58,0.28) 55%,
+    transparent 100%
+  );
+}
+
+/* Tile content — sits above all decorative layers */
+.album-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 22px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Catalog number */
+.album-cat {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.55);
+  font-weight: 300;
+  margin-bottom: 5px;
+}
+
+/* Album title */
+.album-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  transition: color 0.28s;
+}
+.album-tile:hover .album-title { color: var(--amber-hot); }
+
+.album-sub {
+  font-size: 10px;
+  color: var(--text-2);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* Unreleased badge */
+.album-badge {
+  display: inline-block;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.72);
+  border: 1px solid rgba(200,137,58,0.22);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+/* Play ring — bottom right of tile */
+.album-play {
+  position: absolute;
+  bottom: 18px; right: 18px;
+  z-index: 4;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,160,100,0.18);
+  background: rgba(255,235,210,0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.album-play:hover {
+  border-color: rgba(200,137,58,0.55);
+  background: rgba(200,137,58,0.10);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ABOUT — A4 layout grid, A1 centered typography header
+═══════════════════════════════════════════════════════════ */
+#about { padding: 80px 100px 80px; }
+
+.about-panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  border-radius: var(--r-panel);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  padding: 52px 60px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 56px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 16px 52px rgba(0,0,0,0.58);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Warm bloom — center top (A1 position; A4 uses left corner) */
+.about-panel::before {
+  content: '';
+  position: absolute;
+  top: -50px; left: 50%;
+  transform: translateX(-50%);
+  width: 400px; height: 200px;
+  background: radial-gradient(circle,
+    rgba(200,137,58,0.08) 0%, transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Decorative vinyl disc — right side, A4 motif */
+.about-disc {
+  position: absolute;
+  right: -55px; top: 50%;
+  transform: translateY(-50%);
+  width: 190px; height: 190px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(10,5,2,0.9) 0%,
+      rgba(10,5,2,0.9) 16%,
+      rgba(255,190,80,0.06) 17%,
+      rgba(10,5,2,0.9) 19%,
+      rgba(255,190,80,0.05) 24%,
+      rgba(10,5,2,0.9) 26%,
+      rgba(255,190,80,0.04) 31%,
+      rgba(10,5,2,0.9) 34%,
+      rgba(255,190,80,0.035) 38%,
+      rgba(10,5,2,0.9) 41%,
+      rgba(255,190,80,0.03) 45%,
+      rgba(10,5,2,0.9) 48%
+    );
+  border: 1px solid rgba(200,137,58,0.10);
+  opacity: 0.46;
+  pointer-events: none;
+}
+.about-disc::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(139,58,26,0.70) 0%,
+    rgba(200,137,58,0.35) 55%,
+    transparent 100%
+  );
+}
+
+/* Left column: A1 centered heading block */
+.about-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid rgba(200,137,58,0.08);
+  padding-right: 40px;
+}
+.about-left .section-eyebrow { text-align: left; }
+.about-left .section-heading { text-align: left; font-size: 1.70rem; }
+.about-left .section-rule { margin: 0 0 18px; }
+
+.liner-label {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.42);
+  font-weight: 300;
+  margin-top: 16px;
+}
+
+/* Right column: liner note body */
+.about-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.about-right p {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 2.0;
+  max-width: 530px;
+}
+.about-right p + p { margin-top: 18px; }
+
+/* ═══════════════════════════════════════════════════════════
+   LIVE
+═══════════════════════════════════════════════════════════ */
+#live { padding: 0 100px 80px; }
+
+.live-header { margin-bottom: 28px; text-align: center; }
+
+.live-panel {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  border-radius: var(--r-panel);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  padding: 42px 56px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 12px 40px rgba(0,0,0,0.55);
+}
+
+.live-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(200,137,58,0.08);
+  transition: background 0.25s;
+}
+.live-row:last-child { border-bottom: none; }
+.live-row:hover { background: rgba(255,235,210,0.02); }
+
+.live-date-wrap { display: flex; flex-direction: column; gap: 6px; }
+.live-date {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-weight: 300;
+}
+.live-date-rule { width: 22px; height: 1px; background: rgba(200,137,58,0.40); }
+
+.live-venue {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.04rem;
+  font-weight: 400;
+  color: var(--text-1);
+  letter-spacing: 0.04em;
+}
+.live-location {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 10px;
+  color: var(--text-2);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Venue detail tag */
+.live-venue-tag {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.50);
+  border: 1px solid rgba(200,137,58,0.18);
+  border-radius: 2px;
+  padding: 2px 7px;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════════════════════ */
+#contact {
+  padding: 60px 100px 160px;
+  text-align: center;
+}
+.contact-inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.contact-link {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.08rem;
+  font-weight: 400;
+  color: var(--amber);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.3s;
+}
+.contact-link:hover { color: var(--amber-hot); }
+.contact-note {
+  font-size: 12px;
+  color: rgba(138,122,104,0.40);
+  letter-spacing: 0.08em;
+  font-style: italic;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* ─── Page fade ─── */
+.page-fade {
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-deep));
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PERSISTENT PLAYER BAR — A4 turntable + A1 hairline
+═══════════════════════════════════════════════════════════ */
+.player-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 88px;
+  background: rgba(12, 6, 3, 0.92);
+  border-top: 1px solid rgba(200,137,58,0.10);
+  backdrop-filter: blur(28px) saturate(1.6);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 52px;
+  gap: 30px;
+  transform: translateY(100%);
+  transition: transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.player-bar.visible { transform: translateY(0%); }
+
+/* A1 hairline amber rule centered at top of player */
+.player-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 1px;
+  background: linear-gradient(to right,
+    transparent, rgba(200,137,58,0.40), transparent
+  );
+}
+
+/* Wood plinth strip — A4 tactile detail */
+.player-plinth {
+  width: 8px;
+  height: 58px;
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(
+    88deg,
+    #1e1008 0px,  #1e1008 1px,
+    #3c2010 2px,  #3c2010 4px,
+    #6c3d18 5px,  #6c3d18 6px,
+    #3c2010 7px,  #3c2010 9px,
+    #1e1008 10px, #1e1008 12px,
+    #4a2810 13px, #4a2810 15px
+  );
+  opacity: 0.70;
+  flex-shrink: 0;
+}
+
+/* ── Turntable disc + tonearm — A4 ── */
+.turntable-disc-wrap {
+  position: relative;
+  width: 62px; height: 62px;
+  flex-shrink: 0;
+}
+.turntable-disc {
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      #080402 0%,
+      #080402 18%,
+      rgba(255,190,70,0.07) 19%,
+      #080402 21%,
+      rgba(255,190,70,0.06) 25%,
+      #080402 28%,
+      rgba(255,190,70,0.055) 32%,
+      #080402 36%,
+      rgba(255,190,70,0.05) 40%,
+      #080402 44%,
+      rgba(255,190,70,0.04) 47%,
+      #080402 51%,
+      rgba(255,190,70,0.035) 54%,
+      #080402 58%,
+      rgba(255,190,70,0.03) 62%,
+      #080402 66%
+    );
+  border: 1px solid rgba(200,137,58,0.14);
+  position: absolute;
+  inset: 0;
+  animation: spinDisc 1.8s linear infinite paused;
+}
+.player-bar.visible .turntable-disc { animation-play-state: running; }
+@keyframes spinDisc {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Center label + spindle */
+.disc-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(139,58,26,0.85) 0%,
+    rgba(200,137,58,0.45) 60%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.disc-label::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.82);
+}
+
+/* Tonearm */
+.tonearm {
+  position: absolute;
+  top: 4px; right: -10px;
+  width: 32px; height: 44px;
+  transform-origin: 24px 6px;
+  transform: rotate(-22deg);
+  transition: transform 1.2s ease-out;
+  z-index: 5;
+  pointer-events: none;
+}
+.player-bar.visible .tonearm { transform: rotate(0deg); }
+.tonearm-line {
+  position: absolute;
+  top: 6px; left: 22px;
+  width: 2px; height: 38px;
+  background: linear-gradient(to bottom, rgba(200,137,58,0.70), rgba(200,137,58,0.28));
+  border-radius: 1px;
+  transform-origin: top center;
+  transform: rotate(-12deg);
+}
+.tonearm-head {
+  position: absolute;
+  bottom: 0; left: 14px;
+  width: 10px; height: 5px;
+  border-radius: 1px;
+  background: rgba(200,137,58,0.55);
+}
+.tonearm-pivot {
+  position: absolute;
+  top: 0; left: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(200,137,58,0.45);
+  background: rgba(10,5,2,0.80);
+}
+
+/* Track info */
+.player-track-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 210px;
+}
+.player-track-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-1);
+  letter-spacing: 0.03em;
+}
+.player-track-type {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.player-cat-id {
+  font-size: 9px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.40);
+  margin-top: 3px;
+  font-weight: 300;
+}
+
+/* Transport controls */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.ctrl-btn {
+  background: none; border: none;
+  cursor: pointer; opacity: 0.48;
+  transition: opacity 0.25s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ctrl-btn:hover { opacity: 1; }
+.ctrl-play-pause {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,137,58,0.28);
+  background: rgba(255,235,210,0.03);
+  opacity: 1;
+}
+.ctrl-play-pause:hover {
+  background: rgba(200,137,58,0.10);
+  border-color: rgba(200,137,58,0.50);
+}
+
+/* Waveform */
+.player-waveform {
+  display: flex; align-items: center;
+  gap: 2px; height: 30px;
+  flex-shrink: 0;
+}
+.player-waveform span {
+  display: block;
+  width: 3px; border-radius: 2px;
+}
+
+/* Groove progress — A4 style with needle-head */
+.player-progress-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.progress-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200,137,58,0.40);
+  font-weight: 300;
+  margin-bottom: 1px;
+}
+.player-groove-track {
+  height: 3px;
+  background: rgba(138,122,104,0.10);
+  border-radius: 2px;
+  overflow: visible;
+  position: relative;
+}
+.player-groove-fill {
+  height: 100%;
+  width: 24%;
+  background: linear-gradient(to right, var(--amber-aged), var(--amber), var(--amber-hot));
+  border-radius: 2px;
+  position: relative;
+}
+.player-groove-fill::after {
+  content: '';
+  position: absolute;
+  right: -4px; top: 50%;
+  transform: translateY(-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--amber-hot);
+  box-shadow: 0 0 6px rgba(232,176,96,0.55);
+}
+.player-time {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  color: rgba(138,122,104,0.38);
+  text-align: right;
+  font-style: italic;
+}
+
+/* Volume */
+.player-volume {
+  display: flex; align-items: center;
+  gap: 10px; opacity: 0.38;
+  flex-shrink: 0;
+}
+
+/* ─── Selection + scrollbar ─── */
+::selection { background: rgba(200,137,58,0.18); color: var(--text-1); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: rgba(200,137,58,0.13); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(200,137,58,0.26); }
+
+/* ─── Fade-in on scroll ─── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Ambient Warm Field — SVG static frame + CSS animation ─── -->
+<div class="ambient-field">
+  <svg
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    style="position:absolute;inset:0;width:100%;height:100%;opacity:1;"
+    aria-hidden="true"
+  >
+    <defs>
+      <!-- Centered symmetric bloom — A1 inheritance -->
+      <radialGradient id="rg-center" cx="50%" cy="46%" r="44%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.14"/>
+        <stop offset="42%"  stop-color="#a06828" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Follow-spot cone from top center -->
+      <radialGradient id="rg-spot" cx="50%" cy="0%" r="52%">
+        <stop offset="0%"   stop-color="#e8b060" stop-opacity="0.18"/>
+        <stop offset="30%"  stop-color="#c8893a" stop-opacity="0.10"/>
+        <stop offset="65%"  stop-color="#a06828" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Soft left warm drift — A4 off-center note -->
+      <radialGradient id="rg-left" cx="22%" cy="62%" r="38%">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0.10"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Right bloom -->
+      <radialGradient id="rg-right" cx="80%" cy="34%" r="36%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Stage floor apron -->
+      <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Top vignette -->
+      <linearGradient id="topvign" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#0f0805" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="#0f0805"/>
+    <rect width="1440" height="900" fill="url(#rg-center)"/>
+    <!-- Spotlight cone — tight from top center (A1) -->
+    <polygon points="720,0 560,900 880,900" fill="url(#rg-spot)" opacity="0.70"/>
+    <polygon points="720,0 300,900 1140,900" fill="url(#rg-spot)" opacity="0.28"/>
+    <rect width="1440" height="900" fill="url(#rg-left)"/>
+    <rect width="1440" height="900" fill="url(#rg-right)"/>
+    <!-- Floor apron glow -->
+    <ellipse cx="720" cy="900" rx="500" ry="150" fill="url(#rg-floor)" opacity="0.90"/>
+    <!-- Top vignette -->
+    <rect width="1440" height="100" fill="url(#topvign)"/>
+  </svg>
+</div>
+
+<!-- ─── Navigation — A1 symmetrical ─── -->
+<nav>
+  <span class="nav-brand">Jacques</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#library">Collection</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll Root ─── -->
+<div class="scroll-root">
+
+  <!-- ══════════════════ HERO — A1 Proscenium Stage ══════════════════ -->
+  <section id="hero">
+    <div class="spotlight-cone" aria-hidden="true"></div>
+    <div class="spotlight-pool" aria-hidden="true"></div>
+
+    <!-- Name — A1: still, formal, found by the light -->
+    <h1 class="hero-name" id="heroName">Jacques</h1>
+
+    <!-- Stage apron rule — A1 signature horizontal hairline -->
+    <div class="hero-apron" aria-hidden="true"></div>
+
+    <!-- Discipline -->
+    <p class="hero-discipline">Classical &nbsp;&middot;&nbsp; Jazz &nbsp;&middot;&nbsp; Composition</p>
+
+    <!-- Begin listening — A1 form, A4 vinyl-icon touch -->
+    <button class="begin-btn" id="beginBtn" onclick="beginListening()">
+      <span class="vinyl-icon-sm" aria-hidden="true"></span>
+      Begin listening
+      <span style="display:none"><!-- layout anchor --></span>
+    </button>
+    <div class="begin-btn-rule" aria-hidden="true" style="width:min(260px,28vw);height:1px;background:linear-gradient(to right,transparent,rgba(200,137,58,0.30),transparent);margin-top:-4px;"></div>
+
+    <!-- Scroll cue -->
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Collection</span>
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ LIBRARY — A4 Vinyl Grid ══════════════════ -->
+  <section id="library">
+    <div class="library-header fade-in">
+      <p class="section-eyebrow">Collection</p>
+      <h2 class="section-heading">The Record Archive</h2>
+      <div class="section-rule"></div>
+      <p class="library-header section-sub">Pressings, sessions, and live recordings — offered as they were made.</p>
+    </div>
+
+    <div class="album-grid fade-in">
+
+      <!-- Tile 01 — standard -->
+      <div class="album-tile">
+        <div class="album-tile-inner"></div>
+        <div class="album-tile-glow"></div>
+        <div class="vinyl-motif" aria-hidden="true"></div>
+        <div class="album-content">
+          <p class="album-cat">JCQ-001 &nbsp;&middot;&nbsp; Solo Piano</p>
+          <h3 class="album-title">Nocturne in E-flat</h3>
+          <p class="album-sub">4:22 &nbsp;&middot;&nbsp; 2023</p>
+        </div>
+        <div class="album-play" aria-label="Play Nocturne in E-flat">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tile 02 — standard -->
+      <div class="album-tile">
+        <div class="album-tile-inner"></div>
+        <div class="album-tile-glow"></div>
+        <div class="vinyl-motif" aria-hidden="true"></div>
+        <div class="album-content">
+          <p class="album-cat">JCQ-002 &nbsp;&middot;&nbsp; Piano Trio</p>
+          <h3 class="album-title">Blue Reverie</h3>
+          <p class="album-sub">6:08 &nbsp;&middot;&nbsp; 2024</p>
+          <span class="album-badge">Unreleased</span>
+        </div>
+        <div class="album-play" aria-label="Play Blue Reverie">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tile 03 — wide (spans 2 cols, rhythm break) -->
+      <div class="album-tile wide">
+        <div class="album-tile-inner"></div>
+        <div class="album-tile-glow"></div>
+        <div class="vinyl-motif" aria-hidden="true"></div>
+        <div class="album-content">
+          <p class="album-cat">JCQ-003 &nbsp;&middot;&nbsp; Jazz Quartet</p>
+          <h3 class="album-title">Café Trois</h3>
+          <p class="album-sub">5:47 &nbsp;&middot;&nbsp; 2024</p>
+        </div>
+        <div class="album-play" aria-label="Play Café Trois">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tile 04 — standard -->
+      <div class="album-tile">
+        <div class="album-tile-inner"></div>
+        <div class="album-tile-glow"></div>
+        <div class="vinyl-motif" aria-hidden="true"></div>
+        <div class="album-content">
+          <p class="album-cat">JCQ-004 &nbsp;&middot;&nbsp; Solo Piano</p>
+          <h3 class="album-title">Still Water</h3>
+          <p class="album-sub">3:55 &nbsp;&middot;&nbsp; 2025</p>
+          <span class="album-badge">Unreleased</span>
+        </div>
+        <div class="album-play" aria-label="Play Still Water">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tile 05 — placeholder (session note only; maintains visual rhythm) -->
+      <div class="album-tile">
+        <div class="album-tile-inner"></div>
+        <div class="album-tile-glow"></div>
+        <div class="vinyl-motif" aria-hidden="true"></div>
+        <div class="album-content">
+          <p class="album-cat">Session &nbsp;&middot;&nbsp; Forthcoming</p>
+          <h3 class="album-title" style="color:rgba(240,232,220,0.30);">New Work</h3>
+          <p class="album-sub" style="opacity:0.45;">In progress</p>
+        </div>
+      </div>
+
+    </div><!-- /album-grid -->
+  </section>
+
+  <!-- ══════════════════ ABOUT — Bridge Layout ══════════════════ -->
+  <section id="about">
+    <div class="about-panel fade-in">
+      <div class="about-disc" aria-hidden="true"></div>
+
+      <!-- Left: A1 centered heading block -->
+      <div class="about-left">
+        <p class="section-eyebrow">About</p>
+        <h2 class="section-heading">The Artist</h2>
+        <div class="section-rule" style="margin:0 0 14px;"></div>
+        <p class="liner-label">Classical &nbsp;&middot;&nbsp; Jazz &nbsp;&middot;&nbsp; Composition</p>
+      </div>
+
+      <!-- Right: A4 liner note body -->
+      <div class="about-right">
+        <p>
+          Jacques is a pianist and composer working at the intersection of classical tradition and jazz
+          improvisation. Trained in formal conservatory practice, his music is shaped equally by the silence
+          between notes and the warmth of late-night sessions — a sound at home on stages from intimate
+          San Diego clubs to the storied backrooms of Carlsbad Village.
+        </p>
+        <p>
+          His recordings are offered here as they were made: unguarded, unhurried.
+          The unreleased sessions are available to stream because some music is better heard than preserved.
+          Pull a sleeve. Settle in.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ LIVE ══════════════════ -->
+  <section id="live">
+    <div class="live-header fade-in">
+      <p class="section-eyebrow">Live</p>
+      <h2 class="section-heading">Upcoming Engagements</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="live-panel fade-in">
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jun 14</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">
+          The Coyote
+          <span class="live-venue-tag">Evening Set</span>
+        </span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 02</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">
+          The Coyote
+          <span class="live-venue-tag">Late Night</span>
+        </span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 19</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">
+          The Coyote
+          <span class="live-venue-tag">Residency</span>
+        </span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ CONTACT ══════════════════ -->
+  <section id="contact">
+    <div class="contact-inner fade-in">
+      <p class="section-eyebrow">Contact</p>
+      <a href="mailto:hello@jacquesmusic.com" class="contact-link">hello@jacquesmusic.com</a>
+      <p class="contact-note">For bookings, collaborations, and questions left on the bench.</p>
+    </div>
+  </section>
+
+  <div class="page-fade"></div>
+
+</div><!-- /scroll-root -->
+
+<!-- ══════════════════ PERSISTENT PLAYER BAR ══════════════════ -->
+<div class="player-bar" id="playerBar">
+
+  <!-- Wood plinth strip — A4 tactile left edge -->
+  <div class="player-plinth"></div>
+
+  <!-- Spinning turntable disc + settling tonearm — A4 -->
+  <div class="turntable-disc-wrap" aria-hidden="true">
+    <div class="turntable-disc">
+      <div class="disc-label"></div>
+    </div>
+    <div class="tonearm">
+      <div class="tonearm-pivot"></div>
+      <div class="tonearm-line"></div>
+      <div class="tonearm-head"></div>
+    </div>
+  </div>
+
+  <!-- Track info — A4 catalog ID included -->
+  <div class="player-track-info">
+    <span class="player-track-title">Nocturne in E-flat</span>
+    <span class="player-track-type">Solo Piano &nbsp;&middot;&nbsp; Jacques</span>
+    <span class="player-cat-id">JCQ-001</span>
+  </div>
+
+  <!-- Transport controls -->
+  <div class="player-controls">
+    <button class="ctrl-btn" aria-label="Previous">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 3v10M13 3.5L7 8l6 4.5V3.5z"
+          stroke="#f0e8dc" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn ctrl-play-pause" aria-label="Pause">
+      <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+        <rect x="1"   y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+        <rect x="7.5" y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn" aria-label="Next">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M13 3v10M3 3.5L9 8l-6 4.5V3.5z"
+          stroke="#f0e8dc" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Waveform visualizer -->
+  <div class="player-waveform" id="waveform" aria-hidden="true"></div>
+
+  <!-- Groove progress track + A1 time style -->
+  <div class="player-progress-wrap">
+    <div class="progress-label">Side A &nbsp;&middot;&nbsp; Track 1</div>
+    <div class="player-groove-track">
+      <div class="player-groove-fill"></div>
+    </div>
+    <div class="player-time">1:04 &nbsp;&middot;&nbsp; 4:22</div>
+  </div>
+
+  <!-- Volume -->
+  <button class="ctrl-btn player-volume" aria-label="Volume">
+    <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+      <path d="M1 5h3l5-4v14l-5-4H1V5z"
+        stroke="#f0e8dc" stroke-width="1.1" stroke-linejoin="round" fill="none"/>
+      <path d="M13 4c1.5 1.2 2.5 2.9 2.5 4.5s-1 3.3-2.5 4.5"
+        stroke="#f0e8dc" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+    </svg>
+  </button>
+
+</div><!-- /player-bar -->
+
+<script>
+/* ── Waveform bars — B2 blend: 3px wide (A4), amber gradient ── */
+(function() {
+  var wf = document.getElementById('waveform');
+  var heights = [10,18,8,26,14,6,22,10,30,16,8,24,12,6,20,10,28,14,8,22,12,34,18,10,26,13,8,24,16,10,32,14,6,20,10,26,8,18,14,7,24];
+  var playedFrac = 0.24;
+  heights.forEach(function(h, i) {
+    var bar = document.createElement('span');
+    var played = (i / heights.length) < playedFrac;
+    bar.style.height = h + 'px';
+    bar.style.width = '3px';
+    bar.style.borderRadius = '2px';
+    bar.style.flexShrink = '0';
+    bar.style.opacity = played ? '0.85' : '0.18';
+    bar.style.background = played
+      ? 'linear-gradient(to top, #a06828, #c8893a, #e8b060)'
+      : 'linear-gradient(to top, #1e1008, #3c2010)';
+    wf.appendChild(bar);
+  });
+})();
+
+/* ── Begin Listening — A1 hero dissolve, player slide-up ── */
+function beginListening() {
+  var name = document.getElementById('heroName');
+  var hero = document.getElementById('hero');
+  var bar  = document.getElementById('playerBar');
+  var btn  = document.getElementById('beginBtn');
+
+  name.classList.add('dissolved');
+  btn.style.opacity = '0';
+  btn.style.pointerEvents = 'none';
+
+  /* Warm hero bloom on listening state */
+  hero.style.setProperty('--hero-listening', '1');
+
+  setTimeout(function() {
+    bar.classList.add('visible');
+  }, 780);
+}
+
+/* ── Show player on scroll ── */
+window.addEventListener('scroll', function() {
+  var bar = document.getElementById('playerBar');
+  if (window.scrollY > 140 && !bar.classList.contains('visible')) {
+    bar.classList.add('visible');
+  }
+}, { passive: true });
+
+/* ── Intersection Observer — fade-in sections ── */
+(function() {
+  var els = document.querySelectorAll('.fade-in');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -36px 0px' });
+  els.forEach(function(el) { obs.observe(el); });
+})();
+</script>
+
+</body>
+</html>

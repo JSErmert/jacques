@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Jacques — A3 Cinematic Drift</title>
+<style>
+  /* ─── Reset ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-abyss:   #0a0603;
+    --bg-deep:    #0f0805;
+    --bg-mid:     #160d08;
+    --bg-haze:    #1e1208;
+    --amber:      #c8893a;
+    --amber-hot:  #e8b060;
+    --amber-aged: #a06828;
+    --amber-deep: #7a4e1a;
+    --glass-bg:   rgba(255, 235, 210, 0.035);
+    --glass-bg2:  rgba(255, 235, 210, 0.072);
+    --glass-bd:   rgba(200, 160, 100, 0.10);
+    --glass-hi:   rgba(255, 220, 160, 0.05);
+    --text-1:     #f0e8dc;
+    --text-2:     #7a6a58;
+    --text-ghost: rgba(138, 122, 104, 0.40);
+    --wood-dark:  #1e1008;
+    --wood-mid:   #3c2010;
+    --wood-lit:   #6c3d18;
+    --r-card:     18px;
+    --r-panel:    22px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-abyss);
+    color: var(--text-1);
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    width: 1440px;
+  }
+
+  /* ─── Wood Pillar — left edge ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 10%,
+      var(--wood-mid) 30%,
+      var(--wood-lit) 50%,
+      var(--wood-mid) 72%,
+      var(--wood-dark) 92%,
+      transparent 100%
+    );
+    opacity: 0.45;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CINEMATIC DEPTH FIELD — four fixed atmospheric layers
+     Layer 1 (farthest): slow warm amber — off-center right, large
+     Layer 2: deep ember — lower left, drifted
+     Layer 3: ambient haze band — wide, equatorial
+     Layer 4 (nearest): very soft vignette darkening edges
+  ═══════════════════════════════════════════════════════════════ */
+
+  /* Layer 1 — primary warm amber bloom, off-center right (mid-drift pose) */
+  .depth-layer-1 {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(
+        ellipse 68% 58% at 58% 44%,
+        rgba(200, 137, 58, 0.18) 0%,
+        rgba(160, 104, 40, 0.11) 38%,
+        rgba(120, 70, 20, 0.05) 62%,
+        transparent 80%
+      );
+    animation: driftLayer1 20s ease-in-out infinite alternate;
+  }
+  @keyframes driftLayer1 {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 1.00; }
+    40%  { transform: translate(3%,  -4%)   scale(1.04); opacity: 0.90; }
+    70%  { transform: translate(-2%,  3%)   scale(0.97); }
+    100% { transform: translate(5%,  -6%)   scale(1.06); opacity: 0.84; }
+  }
+
+  /* Layer 2 — secondary aged ember bloom, lower-left drifted */
+  .depth-layer-2 {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(
+        ellipse 52% 46% at 24% 68%,
+        rgba(122, 78, 26, 0.14) 0%,
+        rgba(100, 58, 15, 0.07) 45%,
+        transparent 72%
+      ),
+      radial-gradient(
+        ellipse 38% 32% at 78% 22%,
+        rgba(160, 104, 40, 0.09) 0%,
+        transparent 65%
+      );
+    animation: driftLayer2 27s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes driftLayer2 {
+    0%   { transform: translate(0%,   0%)   scale(1.00); opacity: 0.85; }
+    35%  { transform: translate(-4%,  3%)   scale(1.05); }
+    65%  { transform: translate(3%,  -3%)   scale(0.95); opacity: 1.00; }
+    100% { transform: translate(-2%,  5%)   scale(1.07); opacity: 0.78; }
+  }
+
+  /* Layer 3 — wide warm haze band across equator */
+  .depth-layer-3 {
+    position: fixed;
+    left: 0; right: 0;
+    top: 20%;
+    height: 60%;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(
+        ellipse 90% 100% at 50% 50%,
+        rgba(180, 120, 45, 0.07) 0%,
+        rgba(140, 88, 30, 0.04) 50%,
+        transparent 80%
+      );
+    animation: driftLayer3 33s ease-in-out infinite alternate;
+  }
+  @keyframes driftLayer3 {
+    0%   { opacity: 0.70; transform: scaleX(1.00); }
+    50%  { opacity: 1.00; transform: scaleX(1.06); }
+    100% { opacity: 0.65; transform: scaleX(0.96); }
+  }
+
+  /* Layer 4 — edge vignette (static, not animated) */
+  .depth-layer-4 {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      radial-gradient(
+        ellipse 80% 80% at 50% 50%,
+        transparent 40%,
+        rgba(10, 6, 3, 0.45) 80%,
+        rgba(10, 6, 3, 0.72) 100%
+      );
+  }
+
+  /* ─── Scroll container ─── */
+  .scroll-root {
+    position: relative;
+    z-index: 10;
+  }
+
+  section { position: relative; width: 100%; }
+
+  /* ─── Nav ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 32px 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* ultra-subtle nav backdrop */
+    background: linear-gradient(to bottom, rgba(10,6,3,0.30) 0%, transparent 100%);
+  }
+
+  .nav-brand {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.28);
+    font-weight: 400;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 44px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-ghost);
+    text-decoration: none;
+    font-weight: 200;
+    transition: color 0.4s;
+  }
+  .nav-links a:hover { color: rgba(240, 232, 220, 0.70); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HERO — full-bleed field; name dissolving into the bloom
+  ═══════════════════════════════════════════════════════════════ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 40px 120px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /*
+    The enormous center bloom behind the name.
+    This is the "cinematic" departure from Base A:
+    instead of a tight spotlight cone, a vast diffuse
+    warm luminous field fills the center third of the viewport.
+    In the still frame the name appears to be its own light source.
+  */
+  .hero-bloom {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -52%);
+    width: 900px;
+    height: 700px;
+    pointer-events: none;
+    z-index: 3;
+    /* Three concentric warm ellipses — layered depth of the bloom */
+    background:
+      radial-gradient(ellipse 40% 40% at 50% 50%,
+        rgba(232, 176, 96, 0.16) 0%,
+        rgba(200, 137, 58, 0.10) 30%,
+        transparent 62%
+      ),
+      radial-gradient(ellipse 65% 55% at 50% 50%,
+        rgba(200, 137, 58, 0.10) 0%,
+        rgba(160, 104, 40, 0.06) 45%,
+        transparent 75%
+      ),
+      radial-gradient(ellipse 88% 72% at 50% 50%,
+        rgba(160, 104, 40, 0.07) 0%,
+        rgba(120, 70, 20, 0.03) 55%,
+        transparent 80%
+      );
+    animation: heroBloompulse 7s ease-in-out infinite alternate;
+  }
+  @keyframes heroBloompulse {
+    0%   { opacity: 0.80; transform: translate(-50%, -52%) scale(0.96); }
+    100% { opacity: 1.00; transform: translate(-50%, -52%) scale(1.04); }
+  }
+
+  /*
+    Very subtle halo ring around the bloom center —
+    implies depth separation in a still frame.
+  */
+  .hero-halo {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -52%);
+    width: 640px; height: 420px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 137, 58, 0.06);
+    pointer-events: none;
+    z-index: 4;
+    box-shadow: 0 0 60px 20px rgba(200, 137, 58, 0.04);
+  }
+
+  /* Eyebrow — almost invisible */
+  .hero-eyebrow {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.50em;
+    text-transform: uppercase;
+    color: rgba(138, 122, 104, 0.30);
+    font-weight: 200;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 5;
+    /* subtle letter-spacing + low opacity = barely-there label */
+  }
+
+  /*
+    THE NAME — wide tracking, enormous, absorbing into the field.
+    In the still frame this sits at the threshold of dissolve:
+    not sharp graphic text, but text that belongs to the atmosphere.
+  */
+  .hero-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 8.8vw;
+    font-weight: 400;
+    letter-spacing: 0.44em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 5;
+    /* Multi-layer warm glow: tight core + wide diffuse halo */
+    text-shadow:
+      0 0  28px rgba(232, 176, 96, 0.50),
+      0 0  70px rgba(200, 137, 58, 0.30),
+      0 0 130px rgba(160, 104, 40, 0.20),
+      0 0 240px rgba(120, 70,  20, 0.12);
+    /* Very slightly transparent — the name is part of the light, not on top of it */
+    opacity: 0.90;
+    transition: opacity 1.8s ease, filter 1.8s ease;
+    animation: nameDrift 8s ease-in-out infinite alternate;
+  }
+  @keyframes nameDrift {
+    0%   { transform: translateY(0px);   opacity: 0.90; }
+    100% { transform: translateY(-6px);  opacity: 0.94; }
+  }
+
+  .hero-name.dissolved {
+    opacity: 0;
+    filter: blur(32px);
+  }
+
+  /* Hairline divider — barely visible amber thread */
+  .hero-divider {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom,
+      rgba(200, 137, 58, 0.35),
+      rgba(200, 137, 58, 0.08),
+      transparent
+    );
+    margin: 34px auto 36px;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Begin listening — maximum restraint */
+  .begin-btn {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.32);
+    font-weight: 200;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    padding: 12px 0;
+    transition: color 0.6s ease, opacity 0.9s ease;
+  }
+  .begin-btn::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right,
+      transparent,
+      rgba(200, 137, 58, 0.22),
+      transparent
+    );
+    margin-top: 7px;
+    transition: background 0.5s ease;
+  }
+  .begin-btn:hover {
+    color: rgba(240, 232, 220, 0.68);
+  }
+  .begin-btn:hover::after {
+    background: linear-gradient(to right,
+      transparent,
+      rgba(232, 176, 96, 0.55),
+      transparent
+    );
+  }
+
+  /* Scroll hint */
+  .scroll-hint {
+    position: absolute;
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: hintAppear 1s ease-out 4s forwards;
+    z-index: 5;
+  }
+  @keyframes hintAppear { to { opacity: 0.22; } }
+  .scroll-hint span {
+    font-size: 8px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--text-ghost);
+    font-family: system-ui, Arial, sans-serif;
+    font-weight: 200;
+  }
+  .scroll-hint-line {
+    width: 1px;
+    height: 36px;
+    background: linear-gradient(to bottom, rgba(200, 137, 58, 0.25), transparent);
+    animation: scrollLinePulse 2.8s ease-in-out 4s infinite;
+  }
+  @keyframes scrollLinePulse {
+    0%, 100% { opacity: 0.20; }
+    50%       { opacity: 0.55; }
+  }
+
+  /* Hero listening state — bloom expands once */
+  #hero.listening .hero-bloom {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1.18);
+    transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s ease;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     SECTION TYPOGRAPHY — shared
+  ═══════════════════════════════════════════════════════════════ */
+  .section-eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.40em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.42);
+    font-family: system-ui, Arial, sans-serif;
+    font-weight: 200;
+    margin-bottom: 8px;
+  }
+  .section-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 1px;
+    background: rgba(200, 137, 58, 0.28);
+    vertical-align: middle;
+    margin-right: 14px;
+  }
+
+  .section-heading {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: rgba(212, 200, 182, 0.88);
+    margin-bottom: 10px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    max-width: 460px;
+    line-height: 1.95;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LIBRARY — cards emerging from the haze
+     The haze here is denser than Base A; cards have even lower
+     surface opacity so the warm background field shows through.
+  ═══════════════════════════════════════════════════════════════ */
+
+  #library {
+    padding: 96px 144px 108px;
+    position: relative;
+  }
+
+  /*
+    Section-local ambient: extra warm glow seeping up from below the library
+    section title, so the cards appear to emerge from it.
+  */
+  #library::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 320px;
+    background: radial-gradient(
+      ellipse 70% 80% at 50% 0%,
+      rgba(180, 115, 38, 0.09) 0%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .library-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 44px;
+  }
+
+  .track-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  /*
+    Each card is a frosted glass pane floating in the warm field.
+    Key cinematic choices vs Base A:
+    - Lower glass opacity (0.035 vs 0.04)
+    - More aggressive blur (28px vs 18px)
+    - Border even hairlier (0.10 alpha vs 0.12)
+    - No explicit drop shadow — depth is field-implied, not shadow-implied
+    - The 3rd card in first row is 1% smaller (scale:0.993) — parallax depth hint
+  */
+  .track-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-card);
+    backdrop-filter: blur(28px) saturate(1.2);
+    -webkit-backdrop-filter: blur(28px) saturate(1.2);
+    padding: 32px 28px 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi);
+    transition: background 0.40s ease;
+  }
+  .track-card:hover {
+    background: var(--glass-bg2);
+  }
+
+  /* Subtle scale variation — parallax depth suggestion in still frame */
+  .track-card:nth-child(3) { transform: scale(0.993); }
+  .track-card:nth-child(4) { transform: scale(0.988); }
+
+  /* Wood grain left border */
+  .track-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 2px; height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 18%,
+      var(--wood-mid) 40%,
+      var(--wood-lit) 58%,
+      var(--wood-mid) 78%,
+      var(--wood-dark) 94%,
+      transparent 100%
+    );
+    border-radius: var(--r-card) 0 0 var(--r-card);
+    opacity: 0.50;
+  }
+
+  /* Very faint warm top-corner ambient — not a literal glow, more like heat */
+  .track-card::after {
+    content: '';
+    position: absolute;
+    top: -24px; right: -24px;
+    width: 110px; height: 110px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.07) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .track-num {
+    font-size: 8px;
+    letter-spacing: 0.24em;
+    color: var(--text-ghost);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 1.02rem;
+    font-weight: 400;
+    color: rgba(240, 232, 220, 0.85);
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+    transition: color 0.35s;
+  }
+  .track-card:hover .track-title { color: var(--amber-hot); }
+
+  .track-meta {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.06em;
+  }
+
+  .track-badge {
+    display: inline-block;
+    font-size: 7px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.55);
+    border: 1px solid rgba(200, 137, 58, 0.16);
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-top: 14px;
+  }
+
+  .track-play {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 160, 100, 0.14);
+    background: rgba(255, 235, 210, 0.025);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .track-play:hover {
+    border-color: rgba(200, 137, 58, 0.50);
+    background: rgba(200, 137, 58, 0.08);
+  }
+  .track-play svg { display: block; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     ABOUT — floating panel glimpsed through haze
+  ═══════════════════════════════════════════════════════════════ */
+  #about {
+    padding: 0 144px 130px;
+    position: relative;
+  }
+
+  .about-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(28px) saturate(1.2);
+    -webkit-backdrop-filter: blur(28px) saturate(1.2);
+    padding: 52px 56px;
+    display: grid;
+    grid-template-columns: 1fr 2.2fr;
+    gap: 56px;
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Larger, lower-opacity left-corner bleed than Base A */
+  .about-panel::before {
+    content: '';
+    position: absolute;
+    left: -60px; top: -60px;
+    width: 380px; height: 380px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.07) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Right edge fades — panel dissolves into field */
+  .about-panel::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 120px; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(10,6,3,0.12));
+    pointer-events: none;
+    border-radius: 0 var(--r-panel) var(--r-panel) 0;
+  }
+
+  .about-left .section-eyebrow { margin-bottom: 16px; }
+  .about-left .section-heading { font-size: 1.6rem; }
+
+  .about-right p {
+    font-size: 13.5px;
+    color: var(--text-2);
+    line-height: 2.0;
+    max-width: 540px;
+  }
+  .about-right p + p { margin-top: 22px; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LIVE
+  ═══════════════════════════════════════════════════════════════ */
+  #live {
+    padding: 80px 144px 80px;
+  }
+
+  .live-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(28px) saturate(1.2);
+    -webkit-backdrop-filter: blur(28px) saturate(1.2);
+    padding: 38px 48px;
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+    max-width: 620px;
+  }
+
+  .live-row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(200, 137, 58, 0.07);
+  }
+  .live-row:last-child { border-bottom: none; }
+
+  .live-date {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.70);
+    font-weight: 200;
+  }
+
+  .live-venue {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.0rem;
+    font-weight: 400;
+    color: rgba(240, 232, 220, 0.80);
+    letter-spacing: 0.04em;
+  }
+
+  .live-location {
+    font-size: 10px;
+    color: var(--text-ghost);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-weight: 200;
+  }
+
+  .live-date-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .live-date-rule {
+    width: 18px;
+    height: 1px;
+    background: rgba(200, 137, 58, 0.30);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CONTACT
+  ═══════════════════════════════════════════════════════════════ */
+  #contact {
+    padding: 64px 144px 170px;
+    text-align: center;
+  }
+
+  .contact-inner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .contact-inner .section-eyebrow { margin-bottom: 4px; }
+  .contact-inner .section-eyebrow::before { display: none; }
+
+  .contact-link {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: rgba(200, 137, 58, 0.65);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.4s;
+  }
+  .contact-link:hover { color: var(--amber-hot); }
+
+  .contact-note {
+    font-size: 11.5px;
+    color: rgba(138, 122, 104, 0.35);
+    letter-spacing: 0.08em;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  /* Page bottom fade */
+  .page-fade {
+    height: 90px;
+    background: linear-gradient(to bottom, transparent, var(--bg-abyss));
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     PERSISTENT BOTTOM PLAYER
+     More transparent than Base A — it belongs to the atmosphere.
+  ═══════════════════════════════════════════════════════════════ */
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 66px;
+    background: rgba(10, 6, 3, 0.78);
+    border-top: 1px solid rgba(200, 137, 58, 0.07);
+    backdrop-filter: blur(32px) saturate(1.4);
+    -webkit-backdrop-filter: blur(32px) saturate(1.4);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    gap: 32px;
+    transform: translateY(100%);
+    transition: transform 0.70s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .player-bar.visible { transform: translateY(0%); }
+
+  .player-wood {
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(to bottom, var(--wood-dark), var(--wood-lit), var(--wood-dark));
+    border-radius: 1px;
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+
+  .player-track-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+  }
+  .player-track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(240, 232, 220, 0.82);
+    letter-spacing: 0.03em;
+  }
+  .player-track-type {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-ghost);
+    margin-top: 3px;
+    font-weight: 200;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.40;
+    transition: opacity 0.28s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ctrl-btn:hover { opacity: 0.90; }
+
+  .ctrl-play-pause {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 137, 58, 0.22);
+    background: rgba(255, 235, 210, 0.025);
+    opacity: 0.90;
+  }
+  .ctrl-play-pause:hover {
+    background: rgba(200, 137, 58, 0.08);
+    border-color: rgba(200, 137, 58, 0.45);
+  }
+
+  .player-progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .player-progress-bar {
+    height: 1px;
+    background: rgba(138, 122, 104, 0.10);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .player-progress-fill {
+    height: 100%;
+    width: 24%;
+    background: linear-gradient(to right, var(--amber-deep), var(--amber), var(--amber-hot));
+    border-radius: 1px;
+  }
+
+  .player-time {
+    font-size: 9px;
+    letter-spacing: 0.10em;
+    color: rgba(138, 122, 104, 0.32);
+    text-align: right;
+    font-weight: 200;
+  }
+
+  .player-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.30;
+    flex-shrink: 0;
+  }
+
+  .player-waveform {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .player-waveform span {
+    display: block;
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  /* ─── Webkit scrollbar ─── */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg-abyss); }
+  ::-webkit-scrollbar-thumb { background: rgba(200, 137, 58, 0.10); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200, 137, 58, 0.22); }
+
+  ::selection {
+    background: rgba(200, 137, 58, 0.18);
+    color: var(--text-1);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CINEMATIC DEPTH FIELD — four atmospheric layers (fixed)
+     These are the "infinity depth" of the A3 variant.
+     All other content floats over them.
+═══════════════════════════════════════════════════════════════ -->
+
+<!--
+  An inline SVG is the static-fallback for the animated CSS layers.
+  It renders the field at a "mid-drift" pose: primary bloom off-center
+  right-and-slightly-above, secondary bloom lower-left, haze band
+  crossing the equator. The still frame reads as motion-implied.
+-->
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
+  <svg
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    style="position:absolute;inset:0;width:100%;height:100%;"
+    aria-hidden="true"
+  >
+    <defs>
+      <!-- Fill: chocolate abyss -->
+      <!-- Layer 1: primary off-center amber bloom -->
+      <radialGradient id="bloom1" cx="56%" cy="42%" r="48%">
+        <stop offset="0%"   stop-color="#e8b060" stop-opacity="0.14"/>
+        <stop offset="22%"  stop-color="#c8893a" stop-opacity="0.10"/>
+        <stop offset="52%"  stop-color="#a06828" stop-opacity="0.05"/>
+        <stop offset="100%" stop-color="#0a0603" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Layer 2: secondary lower-left ember bloom -->
+      <radialGradient id="bloom2" cx="22%" cy="70%" r="40%">
+        <stop offset="0%"   stop-color="#7a4e1a" stop-opacity="0.13"/>
+        <stop offset="45%"  stop-color="#a06828" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0a0603" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Layer 3: tertiary cool-edge bloom upper-right -->
+      <radialGradient id="bloom3" cx="80%" cy="20%" r="35%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.07"/>
+        <stop offset="100%" stop-color="#0a0603" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Haze band: equatorial warm diffuse strip -->
+      <linearGradient id="hazeBand" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0"/>
+        <stop offset="22%"  stop-color="#c8893a" stop-opacity="0.05"/>
+        <stop offset="50%"  stop-color="#e8b060" stop-opacity="0.04"/>
+        <stop offset="78%"  stop-color="#a06828" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#a06828" stop-opacity="0"/>
+      </linearGradient>
+      <!-- Edge vignette -->
+      <radialGradient id="vignette" cx="50%" cy="50%" r="50%">
+        <stop offset="38%"  stop-color="#0a0603" stop-opacity="0"/>
+        <stop offset="72%"  stop-color="#0a0603" stop-opacity="0.38"/>
+        <stop offset="100%" stop-color="#0a0603" stop-opacity="0.68"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Base abyss -->
+    <rect width="1440" height="900" fill="#0a0603"/>
+
+    <!-- Atmospheric bloom layers -->
+    <rect width="1440" height="900" fill="url(#bloom1)"/>
+    <rect width="1440" height="900" fill="url(#bloom2)"/>
+    <rect width="1440" height="900" fill="url(#bloom3)"/>
+
+    <!-- Haze band — three stacked for richness -->
+    <ellipse cx="720" cy="390" rx="940" ry="62"  fill="url(#hazeBand)" opacity="0.90"/>
+    <ellipse cx="720" cy="440" rx="820" ry="44"  fill="url(#hazeBand)" opacity="0.65" transform="rotate(-1.2 720 440)"/>
+    <ellipse cx="720" cy="500" rx="700" ry="30"  fill="url(#hazeBand)" opacity="0.45" transform="rotate(0.8 720 500)"/>
+
+    <!-- Edge vignette -->
+    <rect width="1440" height="900" fill="url(#vignette)"/>
+  </svg>
+</div>
+
+<!-- Animated CSS depth layers (on top of SVG base for live view) -->
+<div class="depth-layer-1" aria-hidden="true"></div>
+<div class="depth-layer-2" aria-hidden="true"></div>
+<div class="depth-layer-3" aria-hidden="true"></div>
+<div class="depth-layer-4" aria-hidden="true"></div>
+
+<!-- ─── Navigation ─── -->
+<nav>
+  <span class="nav-brand">Jacques</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#library">Library</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll Root ─── -->
+<div class="scroll-root">
+
+  <!-- ═══ HERO ════════════════════════════════════════════════════════
+       Full-bleed field — enormous warm bloom — name dissolving in.
+       THIS is the cinematic departure: no spotlight cone (theatrical),
+       instead a vast ambient field that the name belongs to.
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <!-- The enormous warm bloom behind the name -->
+    <div class="hero-bloom" aria-hidden="true"></div>
+    <!-- Halo ring for depth separation -->
+    <div class="hero-halo" aria-hidden="true"></div>
+
+    <!-- Hero text stack -->
+    <p class="hero-eyebrow">Classical &nbsp;·&nbsp; Jazz &nbsp;·&nbsp; Composition</p>
+
+    <h1 class="hero-name" id="heroName">Jacques</h1>
+
+    <div class="hero-divider"></div>
+
+    <button class="begin-btn" id="beginBtn" onclick="beginListening()">
+      Begin listening
+    </button>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══ LIBRARY — cards emerging from the haze ═══════════════════ -->
+  <section id="library">
+    <div class="library-header">
+      <p class="section-eyebrow">Library</p>
+      <h2 class="section-heading">Works</h2>
+      <p class="section-sub">Recordings and sessions — stream only. Offered as they were made: unguarded.</p>
+    </div>
+
+    <div class="track-grid">
+
+      <!-- 01 -->
+      <div class="track-card">
+        <p class="track-num">01</p>
+        <h3 class="track-title">Nocturne in E-flat</h3>
+        <p class="track-meta">Solo Piano &nbsp;·&nbsp; 4:22</p>
+        <div class="track-play" aria-label="Play">
+          <svg width="9" height="11" viewBox="0 0 9 11" fill="none">
+            <path d="M1.5 1.1l6.5 4-6.5 4V1.1z" fill="#e8b060" opacity="0.80"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 02 -->
+      <div class="track-card">
+        <p class="track-num">02</p>
+        <h3 class="track-title">Blue Reverie</h3>
+        <p class="track-meta">Piano Trio &nbsp;·&nbsp; 6:08</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play" aria-label="Play">
+          <svg width="9" height="11" viewBox="0 0 9 11" fill="none">
+            <path d="M1.5 1.1l6.5 4-6.5 4V1.1z" fill="#e8b060" opacity="0.80"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 03 — slightly smaller per parallax depth spec -->
+      <div class="track-card">
+        <p class="track-num">03</p>
+        <h3 class="track-title">Café Trois</h3>
+        <p class="track-meta">Jazz Quartet &nbsp;·&nbsp; 5:47</p>
+        <div class="track-play" aria-label="Play">
+          <svg width="9" height="11" viewBox="0 0 9 11" fill="none">
+            <path d="M1.5 1.1l6.5 4-6.5 4V1.1z" fill="#e8b060" opacity="0.80"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 04 — even slightly smaller (deeper) -->
+      <div class="track-card">
+        <p class="track-num">04</p>
+        <h3 class="track-title">Still Water</h3>
+        <p class="track-meta">Solo Piano &nbsp;·&nbsp; 3:55</p>
+        <span class="track-badge">Unreleased</span>
+        <div class="track-play" aria-label="Play">
+          <svg width="9" height="11" viewBox="0 0 9 11" fill="none">
+            <path d="M1.5 1.1l6.5 4-6.5 4V1.1z" fill="#e8b060" opacity="0.80"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT — floating far-plane panel ═══════════════════════════ -->
+  <section id="about">
+    <div class="about-panel">
+      <div class="about-left">
+        <p class="section-eyebrow">About</p>
+        <h2 class="section-heading">The Artist</h2>
+      </div>
+      <div class="about-right">
+        <p>
+          Jacques is a pianist and composer working at the intersection of classical tradition and jazz
+          improvisation. Trained in formal conservatory practice, his music is shaped equally by the
+          silence between notes and the warmth of late-night sessions — a sound that has found its home
+          on stages from intimate San Diego clubs to the storied backrooms of Carlsbad Village.
+        </p>
+        <p>
+          His recordings are offered here as they were made: unguarded, unhurried.
+          The unreleased sessions are available to stream because some music is better heard than preserved.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ LIVE ═══════════════════════════════════════════════════════ -->
+  <section id="live">
+    <div style="margin-bottom:26px;">
+      <p class="section-eyebrow">Live</p>
+      <h2 class="section-heading">Upcoming</h2>
+    </div>
+    <div class="live-panel">
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jun 14</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 02</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 19</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <span class="live-venue">The Coyote</span>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══════════════════════════════════════════════════ -->
+  <section id="contact">
+    <div class="contact-inner">
+      <p class="section-eyebrow">Contact</p>
+      <a href="mailto:hello@jacquesmusic.com" class="contact-link">hello@jacquesmusic.com</a>
+      <p class="contact-note">For bookings, collaborations, and questions.</p>
+    </div>
+  </section>
+
+  <div class="page-fade"></div>
+
+</div><!-- /scroll-root -->
+
+<!-- ═══ PERSISTENT BOTTOM PLAYER ═══════════════════════════════════
+     More transparent than Base A; belongs to the atmosphere.
+═══════════════════════════════════════════════════════════════ -->
+<div class="player-bar" id="playerBar">
+  <div class="player-wood"></div>
+
+  <div class="player-track-info">
+    <span class="player-track-title">Nocturne in E-flat</span>
+    <span class="player-track-type">Solo Piano &nbsp;·&nbsp; Jacques</span>
+  </div>
+
+  <div class="player-controls">
+    <button class="ctrl-btn" aria-label="Previous">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2.5 2.5v10M12.5 3L7 7.5l5.5 4.5V3z"
+          stroke="#f0e8dc" stroke-width="1.1"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn ctrl-play-pause" aria-label="Pause">
+      <svg width="11" height="13" viewBox="0 0 11 13" fill="none">
+        <rect x="1"   y="1" width="3.2" height="11" rx="1.4" fill="#e8b060" opacity="0.85"/>
+        <rect x="6.8" y="1" width="3.2" height="11" rx="1.4" fill="#e8b060" opacity="0.85"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn" aria-label="Next">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M12.5 2.5v10M2.5 3L8 7.5 2.5 12V3z"
+          stroke="#f0e8dc" stroke-width="1.1"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="player-waveform" id="waveform" aria-hidden="true"></div>
+
+  <div class="player-progress-wrap">
+    <div class="player-progress-bar">
+      <div class="player-progress-fill"></div>
+    </div>
+    <div class="player-time">1:04 &nbsp;·&nbsp; 4:22</div>
+  </div>
+
+  <button class="ctrl-btn player-volume" aria-label="Volume">
+    <svg width="17" height="15" viewBox="0 0 17 15" fill="none">
+      <path d="M1 4.5h3l4.5-3.5v13L4 10.5H1v-6z"
+        stroke="#f0e8dc" stroke-width="1.0" stroke-linejoin="round" fill="none"/>
+      <path d="M12.5 3.5c1.4 1.1 2.2 2.7 2.2 4.2s-.9 3.1-2.2 4.2"
+        stroke="#f0e8dc" stroke-width="1.0" stroke-linecap="round" fill="none"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+/* ── Waveform bars — thin 2px, longer range for cinematic feel ── */
+(function() {
+  var wf = document.getElementById('waveform');
+  var heights = [8,18,9,24,14,7,22,11,28,16,8,23,12,5,19,10,26,14,6,22,10,32,17,8,25,12,6,23,16,10,30,14,5,20,10,25,8,18,13,7,24,10,20];
+  var playedFrac = 0.24;
+  heights.forEach(function(h, i) {
+    var bar = document.createElement('span');
+    var played = (i / heights.length) < playedFrac;
+    bar.style.height = h + 'px';
+    bar.style.width = '2px';
+    bar.style.borderRadius = '2px';
+    bar.style.opacity = played ? '0.82' : '0.18';
+    bar.style.background = played
+      ? 'linear-gradient(to top, #7a4e1a, #c8893a, #e8b060)'
+      : 'linear-gradient(to top, #1e1208, #2e1a0c)';
+    wf.appendChild(bar);
+  });
+})();
+
+/* ── Begin Listening ── */
+function beginListening() {
+  var name = document.getElementById('heroName');
+  var hero = document.getElementById('hero');
+  var bar  = document.getElementById('playerBar');
+  var btn  = document.getElementById('beginBtn');
+
+  /* Name dissolves — opacity + aggressive blur over 1.8s */
+  name.classList.add('dissolved');
+
+  /* Bloom expands once */
+  hero.classList.add('listening');
+
+  /* Fade out CTA */
+  btn.style.opacity = '0';
+  btn.style.pointerEvents = 'none';
+
+  /* Player rises after name is half-dissolved */
+  setTimeout(function() {
+    bar.classList.add('visible');
+  }, 820);
+}
+
+/* ── Show player on scroll ── */
+window.addEventListener('scroll', function() {
+  var bar = document.getElementById('playerBar');
+  if (window.scrollY > 120 && !bar.classList.contains('visible')) {
+    bar.classList.add('visible');
+  }
+}, { passive: true });
+</script>
+
+</body>
+</html>

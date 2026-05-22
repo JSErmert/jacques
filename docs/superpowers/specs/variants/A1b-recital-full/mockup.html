@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Jacques — A1b Recital Hall · Full</title>
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep:    #0f0805;
+    --bg-mid:     #160d08;
+    --bg-shadow:  #241510;
+    --amber:      #c8893a;
+    --amber-hot:  #e8b060;
+    --amber-aged: #a06828;
+    --glass-bg:   rgba(255, 235, 210, 0.04);
+    --glass-bg2:  rgba(255, 235, 210, 0.075);
+    --glass-bd:   rgba(200, 160, 100, 0.12);
+    --glass-hi:   rgba(255, 220, 160, 0.06);
+    --text-1:     #f0e8dc;
+    --text-2:     #8a7a68;
+    --wood-dark:  #1e1008;
+    --wood-mid:   #3c2010;
+    --wood-lit:   #6c3d18;
+    --r-panel:    14px;
+    --max-col:    800px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-1);
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── Wood Pillar — left edge (framing only) ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 10%,
+      var(--wood-mid) 30%,
+      var(--wood-lit) 52%,
+      var(--wood-mid) 74%,
+      var(--wood-dark) 92%,
+      transparent 100%
+    );
+    opacity: 0.45;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* Right mirror pillar — A1 symmetry */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; right: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--wood-dark) 10%,
+      var(--wood-mid) 30%,
+      var(--wood-lit) 52%,
+      var(--wood-mid) 74%,
+      var(--wood-dark) 92%,
+      transparent 100%
+    );
+    opacity: 0.45;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* ─── Ambient Warm Field (fixed, behind everything) ─── */
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ambient-field::before {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(ellipse 58% 42% at 50% 55%, rgba(200, 137, 58, 0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 38% 50% at 50% 28%, rgba(160, 104, 40, 0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 28% 28% at 50% 82%, rgba(120, 70, 20, 0.07) 0%, transparent 60%);
+    animation: driftWarm 14s ease-in-out infinite alternate;
+  }
+
+  .ambient-field::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(ellipse 45% 52% at 50% 44%, rgba(160, 104, 40, 0.08) 0%, transparent 62%),
+      radial-gradient(ellipse 50% 35% at 50% 70%, rgba(120, 70, 20, 0.07) 0%, transparent 58%);
+    animation: driftCool 18s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes driftWarm {
+    0%   { transform: translate(0%, 0%) scale(1.00); opacity: 1.0; }
+    33%  { transform: translate(1%, -2%) scale(1.02); }
+    66%  { transform: translate(-1%, 3%) scale(0.98); }
+    100% { transform: translate(1%, -4%) scale(1.04); opacity: 0.84; }
+  }
+  @keyframes driftCool {
+    0%   { transform: translate(0%, 0%) scale(1.00); opacity: 0.88; }
+    40%  { transform: translate(-2%, 2%) scale(1.03); }
+    70%  { transform: translate(2%, -3%) scale(0.97); }
+    100% { transform: translate(-1%, 4%) scale(1.05); opacity: 1.0; }
+  }
+
+  /* ─── Scroll container ─── */
+  .scroll-root {
+    position: relative;
+    z-index: 10;
+  }
+
+  section { position: relative; width: 100%; }
+
+  /* ─── Navigation — centered, symmetrical ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 28px 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.40);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 42px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 9.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--text-1); }
+
+  /* ─── Hero Section — proscenium stage ─── */
+  /* A1b: hero still fills the first viewport but with tighter bottom padding
+     so the Library appears immediately when you scroll past the fold. */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* A1b key change: bottom padding trimmed to 60px (was 80px in A1 but the
+       real culprit was 100vh + no negative-margin pull on next section) */
+    padding: 60px 40px 60px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-deep);
+  }
+
+  /* Ambient center glow — symmetric */
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 720px; height: 640px;
+    background: radial-gradient(ellipse at center,
+      rgba(200, 137, 58, 0.11) 0%,
+      rgba(160, 104, 40, 0.06) 42%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    animation: centerPulse 7s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes centerPulse {
+    0%   { opacity: 0.55; transform: translate(-50%, -50%) scale(0.94); }
+    100% { opacity: 1.0;  transform: translate(-50%, -50%) scale(1.07); }
+  }
+
+  /* Proscenium follow-spot — narrow, precise, from directly above center */
+  .spotlight-cone {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      radial-gradient(
+        ellipse 17% 56% at 50% 0%,
+        rgba(232, 176, 96, 0.22) 0%,
+        rgba(200, 137, 58, 0.13) 36%,
+        transparent 76%
+      ),
+      radial-gradient(
+        ellipse 44% 62% at 50% 0%,
+        rgba(200, 137, 58, 0.08) 0%,
+        transparent 62%
+      );
+    animation: coneRise 2.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes coneRise {
+    0%   { opacity: 0; }
+    30%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Stage-floor elliptical pool beneath name */
+  .spotlight-pool {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 120px;
+    background: radial-gradient(
+      ellipse 100% 100% at 50% 20%,
+      rgba(200, 137, 58, 0.09) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: poolRise 3.0s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes poolRise {
+    0%   { opacity: 0; }
+    55%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Artist name */
+  .hero-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 7.4vw;
+    font-weight: 400;
+    letter-spacing: 0.38em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 5;
+    text-shadow:
+      0 0 50px rgba(232, 176, 96, 0.32),
+      0 0 100px rgba(200, 137, 58, 0.18),
+      0 0 180px rgba(160, 104, 40, 0.09);
+    transition: opacity 1.4s ease, filter 1.4s ease;
+  }
+
+  .hero-name.dissolved {
+    opacity: 0;
+    filter: blur(22px);
+  }
+
+  /* Stage apron rule */
+  .hero-apron {
+    width: min(520px, 55vw);
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(200, 137, 58, 0.18) 8%,
+      rgba(200, 137, 58, 0.55) 28%,
+      rgba(232, 176, 96, 0.65) 50%,
+      rgba(200, 137, 58, 0.55) 72%,
+      rgba(200, 137, 58, 0.18) 92%,
+      transparent 100%
+    );
+    margin: 36px auto 0;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Discipline label */
+  .hero-discipline {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: rgba(138, 122, 104, 0.40);
+    font-weight: 300;
+    margin-top: 22px;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Begin listening CTA */
+  .begin-btn {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: rgba(240, 232, 220, 0.38);
+    font-weight: 300;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    padding: 12px 0;
+    margin-top: 20px;
+    transition: color 0.4s ease, opacity 0.8s ease;
+    display: block;
+  }
+  .begin-btn:hover { color: rgba(240, 232, 220, 0.80); }
+  .begin-btn:hover .begin-btn-rule {
+    background: linear-gradient(to right,
+      transparent,
+      rgba(232, 176, 96, 0.65),
+      transparent
+    );
+  }
+
+  .begin-btn-rule {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right,
+      transparent,
+      rgba(200, 137, 58, 0.30),
+      transparent
+    );
+    margin-top: 7px;
+    transition: background 0.4s ease;
+  }
+
+  /* Listening state */
+  #hero.listening::before {
+    opacity: 1;
+    animation: none;
+    transform: translate(-50%, -50%) scale(1.25);
+    background: radial-gradient(ellipse at center,
+      rgba(200, 137, 58, 0.18) 0%,
+      rgba(160, 104, 40, 0.09) 45%,
+      transparent 70%
+    );
+    transition: all 1.8s ease;
+  }
+
+  /* Scroll cue */
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: hintAppear 1s ease-out 3.8s forwards;
+    z-index: 5;
+  }
+  @keyframes hintAppear { to { opacity: 0.28; } }
+  .scroll-hint span {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 8.5px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    font-style: italic;
+  }
+  .scroll-hint-line {
+    width: 1px;
+    height: 28px;
+    background: linear-gradient(to bottom, rgba(200, 137, 58, 0.28), transparent);
+    animation: scrollLinePulse 2.6s ease-in-out 3.8s infinite;
+  }
+  @keyframes scrollLinePulse {
+    0%, 100% { opacity: 0.20; }
+    50%       { opacity: 0.60; }
+  }
+
+  /* ─── Section shared — all centered ─── */
+  .section-inner {
+    max-width: var(--max-col);
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.40em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.50);
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .section-heading {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--text-1);
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  /* Center divider rule beneath headings — A1b: margin-bottom tightened */
+  .section-rule {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent, rgba(200, 137, 58, 0.45), transparent
+    );
+    margin: 0 auto 28px; /* A1b: 28px vs 40px */
+  }
+
+  /* ─── Library — Concert Program ─── */
+  /* A1b: top padding 64px (was 96px), bottom 64px (was 72px) */
+  #library {
+    padding: 64px 80px 56px;
+  }
+
+  .program-container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 20px 60px rgba(0, 0, 0, 0.65);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .program-container::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 200px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.07) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .program-header {
+    padding: 36px 60px 30px; /* A1b: slightly tighter top/bottom */
+    text-align: center;
+    border-bottom: 1px solid rgba(200, 137, 58, 0.09);
+    position: relative;
+  }
+
+  .program-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.50);
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+
+  .program-subtitle {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    letter-spacing: 0.10em;
+    color: var(--text-1);
+  }
+
+  /* Two-column program rows */
+  .program-rows {
+    padding: 0 60px;
+  }
+
+  .program-row {
+    display: grid;
+    grid-template-columns: 38px 1fr 1fr 80px 36px;
+    align-items: center;
+    gap: 0 24px;
+    padding: 20px 0; /* A1b: 20px vs 22px — small, dignified */
+    border-bottom: 1px solid rgba(200, 137, 58, 0.07);
+    transition: background 0.28s ease;
+    position: relative;
+  }
+  .program-row:last-child { border-bottom: none; }
+  .program-row:hover { background: rgba(255, 235, 210, 0.025); }
+
+  .program-row::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent, rgba(200, 137, 58, 0.20), transparent
+    );
+    opacity: 0;
+    transition: opacity 0.28s;
+  }
+  .program-row:hover::after { opacity: 1; }
+
+  .prog-num {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: rgba(200, 137, 58, 0.40);
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+
+  .prog-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--text-1);
+    letter-spacing: 0.02em;
+    transition: color 0.28s;
+  }
+  .program-row:hover .prog-title { color: var(--amber-hot); }
+
+  .prog-genre {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-2);
+    text-transform: uppercase;
+  }
+
+  .prog-duration {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.82rem;
+    color: rgba(138, 122, 104, 0.50);
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+
+  .prog-play {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 160, 100, 0.15);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.28s, background 0.28s;
+    flex-shrink: 0;
+  }
+  .prog-play:hover {
+    border-color: rgba(200, 137, 58, 0.50);
+    background: rgba(200, 137, 58, 0.08);
+  }
+
+  .prog-badge {
+    display: inline-block;
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 7.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(200, 137, 58, 0.55);
+    border: 1px solid rgba(200, 137, 58, 0.20);
+    border-radius: 2px;
+    padding: 2px 6px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  .program-footer {
+    padding: 18px 60px 24px; /* A1b: slightly tighter */
+    text-align: center;
+    border-top: 1px solid rgba(200, 137, 58, 0.07);
+  }
+  .program-footer span {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 0.80rem;
+    color: rgba(138, 122, 104, 0.35);
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── About Panel — A1b: 56px top/bottom (was 80px) ─── */
+  #about {
+    padding: 56px 80px 56px;
+  }
+
+  .about-panel {
+    max-width: var(--max-col);
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 48px 64px; /* A1b: 48px vs 52px */
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 16px 52px rgba(0, 0, 0, 0.60);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-panel::before {
+    content: '';
+    position: absolute;
+    top: -50px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 200px;
+    background: radial-gradient(circle,
+      rgba(200, 137, 58, 0.08) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .about-panel .section-eyebrow { margin-bottom: 6px; }
+
+  .about-bio {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 2.0;
+    text-align: center;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .about-bio p + p { margin-top: 18px; }
+
+  /* ─── Live Section — A1b: no top gap, 56px bottom (was 0 top / 80px bottom) ─── */
+  #live {
+    padding: 0 80px 56px;
+  }
+
+  .live-panel {
+    max-width: var(--max-col);
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-bd);
+    border-radius: var(--r-panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 40px 60px; /* A1b: 40px vs 44px */
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 12px 40px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+  }
+
+  /* Live section now has its own heading block to break it from About */
+  .live-heading-block {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .live-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    align-items: center;
+    gap: 28px;
+    padding: 18px 0; /* A1b: 18px vs 20px */
+    border-bottom: 1px solid rgba(200, 137, 58, 0.08);
+    transition: background 0.28s;
+  }
+  .live-row:last-child { border-bottom: none; }
+  .live-row:hover { background: rgba(255, 235, 210, 0.02); }
+
+  .live-date-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .live-date {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 300;
+  }
+  .live-date-rule {
+    width: 22px;
+    height: 1px;
+    background: rgba(200, 137, 58, 0.40);
+  }
+
+  .live-venue {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.0rem;
+    font-weight: 400;
+    color: var(--text-1);
+    letter-spacing: 0.04em;
+  }
+  .live-venue-note {
+    display: block;
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 9.5px;
+    color: var(--text-2);
+    letter-spacing: 0.08em;
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .live-location {
+    font-family: system-ui, Arial, sans-serif;
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ─── Thin amber inter-section divider ─── */
+  .inter-rule {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom,
+      rgba(200, 137, 58, 0.20), transparent
+    );
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* ─── Contact — A1b: 52px top / 100px bottom ─── */
+  #contact {
+    padding: 52px 80px 100px;
+    text-align: center;
+  }
+
+  .contact-inner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .contact-link {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--amber);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.3s;
+  }
+  .contact-link:hover { color: var(--amber-hot); }
+
+  .contact-note {
+    font-size: 12px;
+    color: rgba(138, 122, 104, 0.38);
+    letter-spacing: 0.08em;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  /* Ornamental closing mark */
+  .contact-mark {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    color: rgba(200, 137, 58, 0.18);
+    letter-spacing: 0.20em;
+    margin-top: 6px;
+    user-select: none;
+  }
+
+  /* ─── Page-bottom fade ─── */
+  .page-fade {
+    height: 72px;
+    background: linear-gradient(to bottom, transparent, var(--bg-deep));
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ─── Persistent Bottom Player ─── */
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: rgba(12, 6, 3, 0.88);
+    border-top: 1px solid rgba(200, 137, 58, 0.10);
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 52px;
+    gap: 36px;
+    transform: translateY(100%);
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .player-bar.visible { transform: translateY(0%); }
+
+  .player-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 1px;
+    background: linear-gradient(to right,
+      transparent, rgba(200, 137, 58, 0.38), transparent
+    );
+  }
+
+  .player-track-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+  }
+  .player-track-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-1);
+    letter-spacing: 0.03em;
+  }
+  .player-track-type {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-top: 3px;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.48;
+    transition: opacity 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ctrl-btn:hover { opacity: 1; }
+
+  .ctrl-play-pause {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 137, 58, 0.28);
+    background: rgba(255, 235, 210, 0.03);
+    opacity: 1;
+  }
+  .ctrl-play-pause:hover {
+    background: rgba(200, 137, 58, 0.10);
+    border-color: rgba(200, 137, 58, 0.50);
+  }
+
+  .player-progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .player-progress-bar {
+    height: 1px;
+    background: rgba(138, 122, 104, 0.10);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .player-progress-fill {
+    height: 100%;
+    width: 24%;
+    background: linear-gradient(to right, var(--amber-aged), var(--amber), var(--amber-hot));
+    border-radius: 1px;
+  }
+
+  .player-time {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 9.5px;
+    letter-spacing: 0.10em;
+    color: rgba(138, 122, 104, 0.35);
+    text-align: right;
+    font-style: italic;
+  }
+
+  .player-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.38;
+    flex-shrink: 0;
+  }
+
+  .player-waveform {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .player-waveform span {
+    display: block;
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  /* ─── Subtle selection ─── */
+  ::selection {
+    background: rgba(200, 137, 58, 0.18);
+    color: var(--text-1);
+  }
+
+  /* ─── Webkit scrollbar ─── */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: rgba(200, 137, 58, 0.12); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200, 137, 58, 0.25); }
+
+  /* ─── Section enter animation ─── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Ambient Warm Field ─── -->
+<div class="ambient-field">
+  <svg
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+    style="position:absolute;inset:0;width:100%;height:100%;opacity:1;"
+    aria-hidden="true"
+  >
+    <defs>
+      <radialGradient id="rg-center" cx="50%" cy="46%" r="44%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.14"/>
+        <stop offset="42%"  stop-color="#a06828" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="rg-spot" cx="50%" cy="0%" r="52%" gradientUnits="userSpaceOnUse"
+        gradientTransform="translate(720,0) scale(1,1) translate(-720,0)">
+        <stop offset="0%"   stop-color="#e8b060" stop-opacity="0.18"/>
+        <stop offset="30%"  stop-color="#c8893a" stop-opacity="0.10"/>
+        <stop offset="65%"  stop-color="#a06828" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="rg-left" cx="16%" cy="60%" r="36%">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0.09"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="rg-right" cx="84%" cy="60%" r="36%">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0.09"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
+        <stop offset="0%"   stop-color="#c8893a" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="lg-horizon" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#a06828" stop-opacity="0"/>
+        <stop offset="30%"  stop-color="#c8893a" stop-opacity="0.04"/>
+        <stop offset="50%"  stop-color="#e8b060" stop-opacity="0.03"/>
+        <stop offset="70%"  stop-color="#c8893a" stop-opacity="0.04"/>
+        <stop offset="100%" stop-color="#a06828" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="topvign" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#0f0805" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#0f0805" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="#0f0805"/>
+    <rect width="1440" height="900" fill="url(#rg-center)"/>
+    <polygon points="720,0 540,900 900,900" fill="url(#rg-spot)" opacity="0.70"/>
+    <polygon points="720,0 280,900 1160,900" fill="url(#rg-spot)" opacity="0.30"/>
+    <rect width="1440" height="900" fill="url(#rg-left)"/>
+    <rect width="1440" height="900" fill="url(#rg-right)"/>
+    <ellipse cx="720" cy="900" rx="480" ry="140" fill="url(#rg-floor)" opacity="0.9"/>
+    <ellipse cx="720" cy="440" rx="880" ry="40" fill="url(#lg-horizon)" opacity="0.9"/>
+    <rect width="1440" height="100" fill="url(#topvign)"/>
+  </svg>
+</div>
+
+<!-- ─── Navigation ─── -->
+<nav>
+  <span class="nav-brand">Jacques</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#library">Library</a></li>
+    <li><a href="#live">Live</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll Root ─── -->
+<div class="scroll-root">
+
+  <!-- ══════════════════════════ HERO ══════════════════════════ -->
+  <section id="hero">
+    <div class="spotlight-cone" aria-hidden="true"></div>
+    <div class="spotlight-pool" aria-hidden="true"></div>
+
+    <h1 class="hero-name" id="heroName">Jacques</h1>
+
+    <div class="hero-apron" aria-hidden="true"></div>
+
+    <p class="hero-discipline">Classical &nbsp;&nbsp;·&nbsp;&nbsp; Jazz &nbsp;&nbsp;·&nbsp;&nbsp; Composition</p>
+
+    <button class="begin-btn" id="beginBtn" onclick="beginListening()">
+      Begin listening
+      <div class="begin-btn-rule" aria-hidden="true"></div>
+    </button>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Programme</span>
+      <div class="scroll-hint-line"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ LIBRARY ══════════════════════════ -->
+  <!-- A1b: padding 64px top / 56px bottom — brings program up under the hero
+       with proper breathing room and no void -->
+  <section id="library">
+    <div class="fade-in">
+      <p class="section-eyebrow">Library</p>
+      <h2 class="section-heading">Programme</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="program-container fade-in">
+      <div class="program-header">
+        <p class="program-title">An Evening with Jacques</p>
+        <p class="program-subtitle">Works for Piano, Trio &amp; Quartet</p>
+      </div>
+
+      <div class="program-rows">
+
+        <div class="program-row">
+          <span class="prog-num">i.</span>
+          <span class="prog-title">Nocturne in E-flat</span>
+          <span class="prog-genre">Solo Piano</span>
+          <span class="prog-duration">4:22</span>
+          <div class="prog-play" aria-label="Play Nocturne in E-flat">
+            <svg width="9" height="11" viewBox="0 0 9 11" fill="none" aria-hidden="true">
+              <path d="M1.2 1.0l6.6 4.0-6.6 4.0V1.0z" fill="#e8b060" opacity="0.82"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="program-row">
+          <span class="prog-num">ii.</span>
+          <span class="prog-title">
+            Blue Reverie
+            <span class="prog-badge">Unreleased</span>
+          </span>
+          <span class="prog-genre">Piano Trio</span>
+          <span class="prog-duration">6:08</span>
+          <div class="prog-play" aria-label="Play Blue Reverie">
+            <svg width="9" height="11" viewBox="0 0 9 11" fill="none" aria-hidden="true">
+              <path d="M1.2 1.0l6.6 4.0-6.6 4.0V1.0z" fill="#e8b060" opacity="0.82"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="program-row">
+          <span class="prog-num">iii.</span>
+          <span class="prog-title">Café Trois</span>
+          <span class="prog-genre">Jazz Quartet</span>
+          <span class="prog-duration">5:47</span>
+          <div class="prog-play" aria-label="Play Café Trois">
+            <svg width="9" height="11" viewBox="0 0 9 11" fill="none" aria-hidden="true">
+              <path d="M1.2 1.0l6.6 4.0-6.6 4.0V1.0z" fill="#e8b060" opacity="0.82"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="program-row">
+          <span class="prog-num">iv.</span>
+          <span class="prog-title">
+            Still Water
+            <span class="prog-badge">Unreleased</span>
+          </span>
+          <span class="prog-genre">Solo Piano</span>
+          <span class="prog-duration">3:55</span>
+          <div class="prog-play" aria-label="Play Still Water">
+            <svg width="9" height="11" viewBox="0 0 9 11" fill="none" aria-hidden="true">
+              <path d="M1.2 1.0l6.6 4.0-6.6 4.0V1.0z" fill="#e8b060" opacity="0.82"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="program-footer">
+        <span>Offered as they were made — unguarded, unhurried.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ ABOUT ══════════════════════════ -->
+  <!-- A1b: padding 56px top/bottom — tight joint under Library -->
+  <section id="about">
+    <div class="fade-in">
+      <p class="section-eyebrow">About</p>
+      <h2 class="section-heading">The Artist</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="about-panel fade-in">
+      <div class="about-bio">
+        <p>
+          Jacques is a pianist and composer working at the intersection of classical tradition and jazz
+          improvisation. Trained in formal conservatory practice, his music is shaped equally by the silence
+          between notes and the warmth of late-night sessions — a sound that has found its home on stages
+          from intimate San Diego clubs to the storied backrooms of Carlsbad Village.
+        </p>
+        <p>
+          His recordings are offered here as they were made: unguarded, unhurried.
+          The unreleased sessions are available to stream because some music is better heard than preserved.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ LIVE ══════════════════════════ -->
+  <!-- A1b: flows directly from About with 0 top padding, 56px bottom.
+       Live has its own heading block inside the panel for visual break. -->
+  <section id="live">
+    <div class="live-panel fade-in">
+
+      <div class="live-heading-block">
+        <p class="section-eyebrow">Live</p>
+        <h2 class="section-heading" style="font-size:1.45rem;">Upcoming Engagements</h2>
+        <div class="section-rule" style="margin-bottom:0;"></div>
+      </div>
+
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jun 14</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <div>
+          <span class="live-venue">The Coyote</span>
+          <span class="live-venue-note">Evening set · doors 7 pm</span>
+        </div>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 02</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <div>
+          <span class="live-venue">The Coyote</span>
+          <span class="live-venue-note">Evening set · doors 7 pm</span>
+        </div>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Jul 19</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <div>
+          <span class="live-venue">The Coyote</span>
+          <span class="live-venue-note">Evening set · doors 7 pm</span>
+        </div>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+
+      <div class="live-row">
+        <div class="live-date-wrap">
+          <span class="live-date">Aug TBD</span>
+          <div class="live-date-rule"></div>
+        </div>
+        <div>
+          <span class="live-venue">The Coyote</span>
+          <span class="live-venue-note">Late-summer residency</span>
+        </div>
+        <span class="live-location">Carlsbad Village, CA</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ CONTACT ══════════════════════════ -->
+  <!-- A1b: 52px top / 100px bottom — dignified close, not cavernous -->
+  <section id="contact">
+    <div class="contact-inner fade-in">
+      <p class="section-eyebrow">Contact</p>
+      <a href="mailto:hello@jacquesmusic.com" class="contact-link">hello@jacquesmusic.com</a>
+      <p class="contact-note">For bookings, residency inquiries, and notes left on the bench.</p>
+      <p class="contact-mark">&#9670; &nbsp; &#9670; &nbsp; &#9670;</p>
+    </div>
+  </section>
+
+  <div class="page-fade"></div>
+
+</div><!-- /scroll-root -->
+
+<!-- ══════════════════════════ PERSISTENT BOTTOM PLAYER ══════════════════════════ -->
+<div class="player-bar" id="playerBar">
+
+  <div class="player-track-info">
+    <span class="player-track-title">Nocturne in E-flat</span>
+    <span class="player-track-type">Solo Piano &nbsp;·&nbsp; Jacques</span>
+  </div>
+
+  <div class="player-controls">
+    <button class="ctrl-btn" aria-label="Previous">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M2.5 2.5v10M12 3L6.5 7.5l5.5 4.5V3z"
+          stroke="#f0e8dc" stroke-width="1.1"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn ctrl-play-pause" aria-label="Pause">
+      <svg width="11" height="13" viewBox="0 0 11 13" fill="none">
+        <rect x="1"   y="1" width="3.2" height="11" rx="1.4" fill="#e8b060" opacity="0.88"/>
+        <rect x="6.8" y="1" width="3.2" height="11" rx="1.4" fill="#e8b060" opacity="0.88"/>
+      </svg>
+    </button>
+    <button class="ctrl-btn" aria-label="Next">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M12.5 2.5v10M3 3l5.5 4.5L3 12V3z"
+          stroke="#f0e8dc" stroke-width="1.1"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="player-waveform" id="waveform" aria-hidden="true"></div>
+
+  <div class="player-progress-wrap">
+    <div class="player-progress-bar">
+      <div class="player-progress-fill"></div>
+    </div>
+    <div class="player-time">1:04 &nbsp;·&nbsp; 4:22</div>
+  </div>
+
+  <button class="ctrl-btn player-volume" aria-label="Volume">
+    <svg width="17" height="15" viewBox="0 0 17 15" fill="none">
+      <path d="M1 5h3l4.5-3.5v11L4 9H1V5z"
+        stroke="#f0e8dc" stroke-width="1.0" stroke-linejoin="round" fill="none"/>
+      <path d="M11.5 3.5c1.4 1.1 2.2 2.7 2.2 4s-.8 2.9-2.2 4"
+        stroke="#f0e8dc" stroke-width="1.0" stroke-linecap="round" fill="none"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  /* ── Waveform bars ── */
+  (function () {
+    var wf = document.getElementById('waveform');
+    var heights = [10,18,8,24,14,6,20,10,28,16,8,22,12,5,18,10,26,14,6,20,10,32,18,8,24,12,6,22,16,10,30,14,5,18,10,24,8,16,13,6,22];
+    var playedFrac = 0.24;
+    heights.forEach(function (h, i) {
+      var bar = document.createElement('span');
+      var played = (i / heights.length) < playedFrac;
+      bar.style.height = h + 'px';
+      bar.style.width = '2px';
+      bar.style.borderRadius = '2px';
+      bar.style.flexShrink = '0';
+      bar.style.opacity = played ? '0.85' : '0.18';
+      bar.style.background = played
+        ? 'linear-gradient(to top, #a06828, #c8893a, #e8b060)'
+        : 'linear-gradient(to top, #1e1008, #3c2010)';
+      wf.appendChild(bar);
+    });
+  })();
+
+  /* ── Begin Listening ── */
+  function beginListening() {
+    var name = document.getElementById('heroName');
+    var hero = document.getElementById('hero');
+    var bar  = document.getElementById('playerBar');
+    var btn  = document.getElementById('beginBtn');
+
+    name.classList.add('dissolved');
+    hero.classList.add('listening');
+    btn.style.opacity = '0';
+    btn.style.pointerEvents = 'none';
+
+    setTimeout(function () {
+      bar.classList.add('visible');
+    }, 800);
+  }
+
+  /* ── Player on scroll ── */
+  window.addEventListener('scroll', function () {
+    var bar = document.getElementById('playerBar');
+    if (window.scrollY > 140 && !bar.classList.contains('visible')) {
+      bar.classList.add('visible');
+    }
+  }, { passive: true });
+
+  /* ── Intersection Observer for fade-in ── */
+  (function () {
+    var els = document.querySelectorAll('.fade-in');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('visible'); });
+      return;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    els.forEach(function (el) { obs.observe(el); });
+  })();
+</script>
+
+</body>
+</html>
