@@ -7,7 +7,7 @@ import { tracks } from '../data/tracks'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import TrackTile from './TrackTile'
 
-export default function CollectionSection({ onPlay }) {
+export default function CollectionSection({ onPlay, currentTrackId, isPlaying, onTogglePlay }) {
   const { ref: headRef, visible: headVisible } = useScrollReveal()
   const { ref: gridRef, visible: gridVisible } = useScrollReveal()
 
@@ -74,7 +74,14 @@ export default function CollectionSection({ onPlay }) {
           width: '100%',
         }}>
           {tracks.map((track) => (
-            <TrackTile key={track.id} track={track} onPlay={onPlay} />
+            <TrackTile
+              key={track.id}
+              track={track}
+              onPlay={onPlay}
+              currentTrackId={currentTrackId}
+              isPlaying={isPlaying}
+              onTogglePlay={onTogglePlay}
+            />
           ))}
         </div>
 

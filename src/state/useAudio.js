@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { SIGNATURE_TRACK_ID, getTrack } from '../data/tracks'
+import { tracks, SIGNATURE_TRACK_ID, getTrack } from '../data/tracks'
 
 // Single shared <audio>; guarded so real src plays when present, stub is a no-op.
 export function useAudio() {
@@ -29,5 +29,30 @@ export function useAudio() {
   const openAlbum = useCallback((id) => setOpenAlbumId(id), [])
   const closeAlbum = useCallback(() => setOpenAlbumId(null), [])
 
-  return { audioRef, gateOpen, currentTrackId, isPlaying, openAlbumId, begin, selectTrack, togglePlay, openAlbum, closeAlbum }
+  // FIX 4 — queue navigation; wraps around the tracks array.
+  const next = useCallback(() => {
+    setCurrentTrackId((id) => {
+      const idx = tracks.findIndex((t) => t.id === id)
+      const nextId = tracks[(idx + 1) % tracks.length].id
+      const el = audioRef.current
+      const src = getTrack(nextId)?.src
+      if (el && src) { el.src = src; el.play().catch(() => {}) }
+      return nextId
+    })
+    setIsPlaying(true)
+  }, [])
+
+  const prev = useCallback(() => {
+    setCurrentTrackId((id) => {
+      const idx = tracks.findIndex((t) => t.id === id)
+      const prevId = tracks[(idx - 1 + tracks.length) % tracks.length].id
+      const el = audioRef.current
+      const src = getTrack(prevId)?.src
+      if (el && src) { el.src = src; el.play().catch(() => {}) }
+      return prevId
+    })
+    setIsPlaying(true)
+  }, [])
+
+  return { audioRef, gateOpen, currentTrackId, isPlaying, openAlbumId, begin, selectTrack, togglePlay, openAlbum, closeAlbum, next, prev }
 }

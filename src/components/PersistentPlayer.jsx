@@ -2,7 +2,9 @@
 // Renders nothing when track is null.
 // Visual CSS ported from docs/superpowers/specs/variants/B3-archive-stage/mockup.html
 // (.player-bar, .turntable-disc, .tonearm, .player-controls, etc.)
-// Props: track (object|null), isPlaying (bool), onTogglePlay (fn)
+// Props: track (object|null), isPlaying (bool), onTogglePlay (fn), onPrev (fn), onNext (fn)
+
+import { useState, useEffect } from 'react'
 
 const styles = `
   @keyframes spinDisc {
@@ -26,7 +28,11 @@ const woodGradientH = `repeating-linear-gradient(
 const WAVE_HEIGHTS = [10,18,8,26,14,6,22,10,30,16,8,24,12,6,20,10,28,14,8,22,12,34,18,10,26,13,8,24,16,10,32,14,6,20,10,26,8,18,14,7,24]
 const PLAYED_FRAC = 0.24
 
-export default function PersistentPlayer({ track, isPlaying, onTogglePlay }) {
+export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPrev, onNext }) {
+  // FIX 2 — tonearm starts parked and sweeps to engaged on first mount.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   if (!track) return null
 
   return (
@@ -126,7 +132,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay }) {
           top: '4px', right: '-10px',
           width: '32px', height: '44px',
           transformOrigin: '24px 6px',
-          transform: isPlaying ? 'rotate(0deg)' : 'rotate(-28deg)',
+          transform: mounted && isPlaying ? 'rotate(0deg)' : 'rotate(-28deg)',
           transition: 'transform 1.2s ease-out',
           zIndex: 5,
           pointerEvents: 'none',
@@ -193,6 +199,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay }) {
       {/* Transport controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <button
+          onClick={onPrev}
           aria-label="Previous"
           style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
@@ -226,6 +233,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay }) {
         </button>
 
         <button
+          onClick={onNext}
           aria-label="Next"
           style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >

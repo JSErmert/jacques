@@ -24,10 +24,18 @@ const vinylBg = `radial-gradient(circle at 50% 50%,
   rgba(255,200,100,0.00) 46%
 ), rgba(10,5,2,0.55)`
 
-export default function TrackTile({ track, onPlay }) {
+export default function TrackTile({ track, onPlay, currentTrackId, isPlaying, onTogglePlay }) {
+  const isCurrentAndPlaying = track.id === currentTrackId && isPlaying
+  const handleClick = () => {
+    if (track.id === currentTrackId) {
+      onTogglePlay()
+    } else {
+      onPlay(track.id)
+    }
+  }
   return (
     <div
-      onClick={() => onPlay(track.id)}
+      onClick={handleClick}
       style={{
         position: 'relative',
         aspectRatio: '1 / 1',
@@ -129,7 +137,7 @@ export default function TrackTile({ track, onPlay }) {
         </p>
       </div>
 
-      {/* Play ring — bottom-right */}
+      {/* Play/Pause ring — bottom-right */}
       <div style={{
         position: 'absolute',
         bottom: '18px', right: '18px',
@@ -142,9 +150,16 @@ export default function TrackTile({ track, onPlay }) {
         alignItems: 'center',
         justifyContent: 'center',
       }} aria-hidden="true">
-        <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
-          <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
-        </svg>
+        {isCurrentAndPlaying ? (
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true">
+            <rect x="1"   y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+            <rect x="7.5" y="1" width="3.5" height="12" rx="1.5" fill="#e8b060" opacity="0.90"/>
+          </svg>
+        ) : (
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none" aria-hidden="true">
+            <path d="M1.5 1.2l7.2 4.4-7.2 4.4V1.2z" fill="#e8b060" opacity="0.85"/>
+          </svg>
+        )}
       </div>
     </div>
   )

@@ -30,6 +30,8 @@ export default function App() {
     togglePlay,
     openAlbum,
     closeAlbum,
+    next,
+    prev,
   } = useAudio()
 
   const currentTrack = getTrackById(currentTrackId)
@@ -40,13 +42,13 @@ export default function App() {
       <NavigationBar />
       <BackgroundLayer />
 
-      <HeroSection onBegin={begin} gateOpen={gateOpen} />
+      <HeroSection onBegin={begin} gateOpen={gateOpen} nowPlayingTitle={currentTrack?.title ?? null} />
 
       {/* Post-hero sections wrapper — Pillars live here, not in hero */}
       <main style={{ position: 'relative' }}>
         <Pillars />
         <AboutSection />
-        <CollectionSection onPlay={selectTrack} />
+        <CollectionSection onPlay={selectTrack} currentTrackId={currentTrackId} isPlaying={isPlaying} onTogglePlay={togglePlay} />
         <PressingsSection albums={albums} onOpen={openAlbum} />
         <LiveSection />
         <ContactSection />
@@ -56,16 +58,21 @@ export default function App() {
         track={currentTrack}
         isPlaying={isPlaying}
         onTogglePlay={togglePlay}
+        onPrev={prev}
+        onNext={next}
       />
 
       <AlbumOverlay
         album={openAlbumObj}
         onClose={closeAlbum}
         onSelectTrack={(id) => { selectTrack(id); closeAlbum() }}
+        currentTrackId={currentTrackId}
+        isPlaying={isPlaying}
+        onTogglePlay={togglePlay}
       />
 
       {/* Shared audio element — src set by useAudio when a real file is available */}
-      <audio ref={audioRef} hidden />
+      <audio ref={audioRef} hidden onEnded={next} />
     </>
   )
 }

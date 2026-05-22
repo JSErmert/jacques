@@ -10,4 +10,12 @@ describe('HeroSection', () => {
     await userEvent.click(screen.getByRole('button', { name: /begin listening/i }))
     expect(onBegin).toHaveBeenCalledOnce()
   })
+  it('shows "Now Playing" label with track title after gate opens', () => {
+    render(<HeroSection onBegin={() => {}} gateOpen={true} nowPlayingTitle="Nocturne in E-flat" />)
+    expect(screen.getByText(/now playing.*nocturne in e-flat/i)).toBeInTheDocument()
+  })
+  it('does not show Now Playing text before gate opens', () => {
+    render(<HeroSection onBegin={() => {}} gateOpen={false} nowPlayingTitle={null} />)
+    expect(screen.queryByText(/now playing/i)).not.toBeVisible()
+  })
 })

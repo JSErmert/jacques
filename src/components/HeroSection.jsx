@@ -25,7 +25,7 @@ const styles = `
   }
 `
 
-export default function HeroSection({ onBegin, gateOpen }) {
+export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
   return (
     <section
       style={{
@@ -140,7 +140,7 @@ export default function HeroSection({ onBegin, gateOpen }) {
         Classical &nbsp;&nbsp;·&nbsp;&nbsp; Jazz &nbsp;&nbsp;·&nbsp;&nbsp; Composition
       </p>
 
-      {/* Begin listening CTA */}
+      {/* Begin listening CTA / Now Playing — same slot, cross-faded */}
       <button
         onClick={onBegin}
         aria-label="Begin listening"
@@ -181,6 +181,28 @@ export default function HeroSection({ onBegin, gateOpen }) {
         />
         Begin listening
       </button>
+
+      {/* Now Playing line — fades in once gate is open and a track is selected */}
+      <p
+        aria-live="polite"
+        style={{
+          fontFamily: 'system-ui, Arial, sans-serif',
+          fontSize: '9.5px',
+          letterSpacing: '0.36em',
+          textTransform: 'uppercase',
+          color: 'rgba(240,232,220,0.55)',
+          fontWeight: 300,
+          position: 'relative',
+          zIndex: 5,
+          marginTop: '20px',
+          padding: '12px 0',
+          opacity: gateOpen && nowPlayingTitle ? 1 : 0,
+          transition: 'opacity 0.6s',
+          pointerEvents: 'none',
+        }}
+      >
+        Now Playing: {nowPlayingTitle}
+      </p>
 
       {/* Scroll hint */}
       <div

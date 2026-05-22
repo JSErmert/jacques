@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useAudio } from './useAudio'
+import { tracks } from '../data/tracks'
 
 describe('useAudio', () => {
   it('starts with gate closed and nothing playing', () => {
@@ -34,5 +35,34 @@ describe('useAudio', () => {
     expect(result.current.openAlbumId).toBe('reveries')
     act(() => result.current.closeAlbum())
     expect(result.current.openAlbumId).toBe(null)
+  })
+
+  describe('next() / prev() — queue navigation', () => {
+    it('next() advances to the next track and keeps playing', () => {
+      const { result } = renderHook(() => useAudio())
+      act(() => result.current.selectTrack(tracks[0].id))
+      act(() => result.current.next())
+      expect(result.current.currentTrackId).toBe(tracks[1].id)
+      expect(result.current.isPlaying).toBe(true)
+    })
+    it('next() wraps from last track to first', () => {
+      const { result } = renderHook(() => useAudio())
+      act(() => result.current.selectTrack(tracks[tracks.length - 1].id))
+      act(() => result.current.next())
+      expect(result.current.currentTrackId).toBe(tracks[0].id)
+    })
+    it('prev() moves to the previous track', () => {
+      const { result } = renderHook(() => useAudio())
+      act(() => result.current.selectTrack(tracks[1].id))
+      act(() => result.current.prev())
+      expect(result.current.currentTrackId).toBe(tracks[0].id)
+      expect(result.current.isPlaying).toBe(true)
+    })
+    it('prev() wraps from first track to last', () => {
+      const { result } = renderHook(() => useAudio())
+      act(() => result.current.selectTrack(tracks[0].id))
+      act(() => result.current.prev())
+      expect(result.current.currentTrackId).toBe(tracks[tracks.length - 1].id)
+    })
   })
 })
