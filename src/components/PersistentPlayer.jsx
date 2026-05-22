@@ -120,13 +120,13 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay }) {
           </div>
         </div>
 
-        {/* Tonearm */}
+        {/* Tonearm — parked (~-28deg) when not playing, engaged (0deg) when playing */}
         <div style={{
           position: 'absolute',
           top: '4px', right: '-10px',
           width: '32px', height: '44px',
           transformOrigin: '24px 6px',
-          transform: 'rotate(0deg)',
+          transform: isPlaying ? 'rotate(0deg)' : 'rotate(-28deg)',
           transition: 'transform 1.2s ease-out',
           zIndex: 5,
           pointerEvents: 'none',
