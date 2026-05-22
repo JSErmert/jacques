@@ -105,9 +105,6 @@ export default function HeroSection({ onBegin, gateOpen }) {
           position: 'relative',
           zIndex: 5,
           textShadow: '0 0 60px rgba(232,176,96,0.36), 0 0 120px rgba(200,137,58,0.20), 0 0 200px rgba(160,104,40,0.10)',
-          transition: 'opacity 1.4s ease, filter 1.4s ease',
-          opacity: gateOpen ? 0 : 1,
-          filter: gateOpen ? 'blur(22px)' : 'none',
         }}
       >
         Jacques
