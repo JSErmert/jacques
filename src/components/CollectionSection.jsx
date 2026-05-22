@@ -2,10 +2,29 @@
 // Maps tracks -> TrackTile. Clicking a tile calls onPlay(track.id).
 // Visual CSS ported from #library, .album-grid, .stage-note in the B3 mockup.
 // Uses useScrollReveal for section fade-in.
+// Mobile: 1-col; tablet: 2-col; desktop: 4-col.
 
 import { tracks } from '../data/tracks'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import TrackTile from './TrackTile'
+
+const collectionStyles = `
+  .collection-section { padding: 96px 64px 100px; }
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    width: 100%;
+  }
+  @media (max-width: 768px) {
+    .collection-section { padding: 64px 20px 72px; }
+    .collection-grid { grid-template-columns: 1fr; gap: 18px; }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .collection-section { padding: 72px 32px 80px; }
+    .collection-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+`
 
 export default function CollectionSection({ onPlay, currentTrackId, isPlaying, onTogglePlay }) {
   const { ref: headRef, visible: headVisible } = useScrollReveal()
@@ -14,8 +33,9 @@ export default function CollectionSection({ onPlay, currentTrackId, isPlaying, o
   return (
     <section
       id="library"
-      style={{ padding: '96px 64px 100px' }}
+      className="collection-section"
     >
+      <style>{collectionStyles}</style>
       {/* Section heading */}
       <div
         ref={headRef}
@@ -67,12 +87,7 @@ export default function CollectionSection({ onPlay, currentTrackId, isPlaying, o
           transition: 'opacity 0.65s ease, transform 0.65s ease',
         }}
       >
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '22px',
-          width: '100%',
-        }}>
+        <div className="collection-grid">
           {tracks.map((track) => (
             <TrackTile
               key={track.id}

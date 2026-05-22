@@ -1,6 +1,7 @@
 // LiveSection — "Upcoming Engagements" venue rows.
 // Data inline. Visual CSS ported from #live, .live-panel in the B3 mockup.
 // Uses useScrollReveal for fade-in.
+// Mobile: reduced section padding, reduced panel padding.
 
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import VenueRow from './VenueRow'
@@ -11,12 +12,27 @@ const shows = [
   { date: 'Jul 19', venue: 'The Coyote', city: 'Carlsbad Village, CA' },
 ]
 
+const liveStyles = `
+  .live-section { padding: 0 64px 80px; }
+  .live-panel { padding: 44px 60px; }
+  @media (max-width: 768px) {
+    .live-section { padding: 0 16px 56px; }
+    .live-panel { padding: 24px 20px; }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .live-section { padding: 0 32px 64px; }
+    .live-panel { padding: 32px 32px; }
+  }
+`
+
 export default function LiveSection() {
   const { ref: headRef, visible: headVisible } = useScrollReveal()
   const { ref: panelRef, visible: panelVisible } = useScrollReveal()
 
   return (
-    <section id="live" style={{ padding: '0 64px 80px' }}>
+    <section id="live" className="live-section">
+      <style>{liveStyles}</style>
+
       {/* Section heading */}
       <div
         ref={headRef}
@@ -60,6 +76,7 @@ export default function LiveSection() {
       {/* Live panel */}
       <div
         ref={panelRef}
+        className="live-panel"
         style={{
           maxWidth: '760px',
           margin: '0 auto',
@@ -68,7 +85,6 @@ export default function LiveSection() {
           borderRadius: '16px',
           backdropFilter: 'blur(18px) saturate(1.3)',
           WebkitBackdropFilter: 'blur(18px) saturate(1.3)',
-          padding: '44px 60px',
           boxShadow: 'inset 0 1px 0 rgba(255,220,160,0.06), 0 12px 40px rgba(0,0,0,0.55)',
           opacity: panelVisible ? 1 : 0,
           transform: panelVisible ? 'none' : 'translateY(18px)',

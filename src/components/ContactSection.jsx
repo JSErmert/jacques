@@ -1,9 +1,18 @@
 // ContactSection — contact footer with email + booking note.
 // Visual CSS ported from #contact in the B3 mockup.
+// Mobile: reduced horizontal and bottom padding.
+
+const contactStyles = `
+  .contact-section { padding: 60px 64px 160px; text-align: center; }
+  @media (max-width: 768px) {
+    .contact-section { padding: 40px 20px 100px; }
+  }
+`
 
 export default function ContactSection() {
   return (
-    <section id="contact" style={{ padding: '60px 64px 160px', textAlign: 'center' }}>
+    <section id="contact" className="contact-section">
+      <style>{contactStyles}</style>
       <div style={{
         display: 'inline-flex',
         flexDirection: 'column',
@@ -31,6 +40,7 @@ export default function ContactSection() {
             textDecoration: 'none',
             letterSpacing: '0.08em',
             transition: 'color 0.3s',
+            wordBreak: 'break-all',
           }}
           onMouseEnter={(e) => { e.currentTarget.style.color = '#e8b060' }}
           onMouseLeave={(e) => { e.currentTarget.style.color = '#c8893a' }}
@@ -44,6 +54,8 @@ export default function ContactSection() {
           letterSpacing: '0.08em',
           fontStyle: 'italic',
           fontFamily: "Georgia, 'Times New Roman', serif",
+          maxWidth: '280px',
+          textAlign: 'center',
         }}>
           For bookings, collaborations, and questions left on a sleeve.
         </p>

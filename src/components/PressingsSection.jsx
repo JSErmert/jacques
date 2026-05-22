@@ -3,16 +3,44 @@
 // vinyl-disc motifs, catalog numbers, italic serif titles, program-footer.
 // Clicking a tile calls onOpen(album.id) — AlbumOverlay behavior unchanged.
 // Uses useScrollReveal for section fade-in.
+// Mobile: 1-col grid, reduced paddings.
 
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import AlbumTile from './AlbumTile'
+
+const pressingsStyles = `
+  .pressings-section { padding: 96px 80px 80px; }
+  .pressings-program-header { padding: 42px 60px 32px; text-align: center; border-bottom: 1px solid rgba(200,137,58,0.09); position: relative; z-index: 1; }
+  .pressings-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: rgba(200,137,58,0.07);
+    position: relative;
+    z-index: 1;
+  }
+  .pressings-footer { padding: 20px 60px 26px; text-align: center; border-top: 1px solid rgba(200,137,58,0.07); position: relative; z-index: 1; }
+  @media (max-width: 768px) {
+    .pressings-section { padding: 64px 16px 56px; }
+    .pressings-program-header { padding: 24px 20px 20px; }
+    .pressings-tile-grid { grid-template-columns: 1fr; }
+    .pressings-footer { padding: 16px 20px 20px; }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .pressings-section { padding: 72px 32px 64px; }
+    .pressings-program-header { padding: 32px 36px 24px; }
+    .pressings-footer { padding: 16px 36px 20px; }
+  }
+`
 
 export default function PressingsSection({ albums, onOpen }) {
   const { ref: headRef, visible: headVisible } = useScrollReveal()
   const { ref: bodyRef, visible: bodyVisible } = useScrollReveal()
 
   return (
-    <section id="archive" style={{ padding: '96px 80px 80px' }}>
+    <section id="archive" className="pressings-section">
+      <style>{pressingsStyles}</style>
+
       {/* Section heading */}
       <div
         ref={headRef}
@@ -87,13 +115,7 @@ export default function PressingsSection({ albums, onOpen }) {
         />
 
         {/* Program header */}
-        <div style={{
-          padding: '42px 60px 32px',
-          textAlign: 'center',
-          borderBottom: '1px solid rgba(200,137,58,0.09)',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        <div className="pressings-program-header">
           <p style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontSize: '0.72rem',
@@ -116,28 +138,15 @@ export default function PressingsSection({ albums, onOpen }) {
           </p>
         </div>
 
-        {/* 2-column pressing tile grid (B1) */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '1px',
-          background: 'rgba(200,137,58,0.07)',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        {/* Pressing tile grid */}
+        <div className="pressings-tile-grid">
           {albums.map((album) => (
             <AlbumTile key={album.id} album={album} onOpen={onOpen} />
           ))}
         </div>
 
         {/* Program footer */}
-        <div style={{
-          padding: '20px 60px 26px',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(200,137,58,0.07)',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        <div className="pressings-footer">
           <span style={{
             fontFamily: "Georgia, 'Times New Roman', serif",
             fontStyle: 'italic',

@@ -2,6 +2,24 @@ import { useEffect } from 'react'
 import FrostPanel from './FrostPanel'
 import { albumTracks } from '../data/albums'
 
+const overlayStyles = `
+  .overlay-panel {
+    max-width: 32rem;
+    width: 90%;
+    padding: 2rem;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @media (max-width: 768px) {
+    .overlay-panel {
+      width: 92vw;
+      padding: 1.25rem 1rem;
+      max-height: 85vh;
+    }
+  }
+`
+
 export default function AlbumOverlay({ album, onClose, onSelectTrack, currentTrackId, isPlaying, onTogglePlay }) {
   useEffect(() => {
     if (!album) return
@@ -16,9 +34,10 @@ export default function AlbumOverlay({ album, onClose, onSelectTrack, currentTra
       onClick={onClose}
       className="fixed inset-0 z-[100] flex items-center justify-center"
       style={{ background: 'rgba(8,4,2,0.72)' }}>
-      <FrostPanel className="max-w-lg w-[90%] p-8" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
+      <style>{overlayStyles}</style>
+      <FrostPanel className="overlay-panel" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
         <button aria-label="Close" onClick={onClose} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,232,220,0.70)', fontSize: '1.4rem', lineHeight: 1 }}>×</button>
-        <h3 style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: '1.5rem', color: '#f0e8dc', marginBottom: '4px' }}>{album.title}</h3>
+        <h3 style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: '1.5rem', color: '#f0e8dc', marginBottom: '4px', paddingRight: '2rem' }}>{album.title}</h3>
         <p style={{ color: 'rgba(240,232,220,0.50)', fontSize: '0.8rem', marginBottom: '1.25rem', letterSpacing: '0.06em' }}>{album.year}</p>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {albumTracks(album).map((t) => {
@@ -57,7 +76,7 @@ export default function AlbumOverlay({ album, onClose, onSelectTrack, currentTra
                     </svg>
                   )}
                   <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: 'italic', flex: 1 }}>{t.title}</span>
-                  <span style={{ color: 'rgba(240,232,220,0.40)', fontSize: '0.8rem' }}>{t.duration}</span>
+                  <span style={{ color: 'rgba(240,232,220,0.40)', fontSize: '0.8rem', flexShrink: 0 }}>{t.duration}</span>
                 </button>
               </li>
             )

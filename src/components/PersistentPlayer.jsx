@@ -3,6 +3,7 @@
 // Visual CSS ported from docs/superpowers/specs/variants/B3-archive-stage/mockup.html
 // (.player-bar, .turntable-disc, .tonearm, .player-controls, etc.)
 // Props: track (object|null), isPlaying (bool), onTogglePlay (fn), onPrev (fn), onNext (fn)
+// Mobile: smaller disc, track title + prev/play/next only; waveform/groove/volume hidden.
 
 import { useState, useEffect } from 'react'
 
@@ -10,6 +11,52 @@ const styles = `
   @keyframes spinDisc {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
+  }
+
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 88px;
+    background: rgba(11,6,3,0.92);
+    border-top: 1px solid rgba(200,137,58,0.10);
+    backdrop-filter: blur(28px) saturate(1.5);
+    -webkit-backdrop-filter: blur(28px) saturate(1.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    padding: 0 52px;
+    gap: 36px;
+    box-sizing: border-box;
+  }
+  .player-wood-accent { display: block; }
+  .player-waveform { display: flex; }
+  .player-groove { display: flex; flex: 1; flex-direction: column; gap: 6px; }
+  .player-volume { display: flex; }
+  .player-track-info { display: flex; flex-direction: column; min-width: 220px; }
+
+  @media (max-width: 768px) {
+    .player-bar {
+      height: auto;
+      min-height: 72px;
+      padding: 10px 16px;
+      gap: 12px;
+    }
+    .player-wood-accent { display: none; }
+    .player-waveform { display: none; }
+    .player-groove { display: none; }
+    .player-volume { display: none; }
+    .player-disc-wrap {
+      width: 46px !important;
+      height: 46px !important;
+    }
+    .player-disc {
+      width: 46px !important;
+      height: 46px !important;
+    }
+    .player-track-info {
+      min-width: 0;
+      flex: 1;
+    }
   }
 `
 
@@ -36,24 +83,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
   if (!track) return null
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0, left: 0, right: 0,
-        height: '88px',
-        background: 'rgba(11,6,3,0.92)',
-        borderTop: '1px solid rgba(200,137,58,0.10)',
-        backdropFilter: 'blur(28px) saturate(1.5)',
-        WebkitBackdropFilter: 'blur(28px) saturate(1.5)',
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 52px',
-        gap: '36px',
-        // A1 centered amber rule at top
-        boxSizing: 'border-box',
-      }}
-    >
+    <div className="player-bar">
       <style>{styles}</style>
 
       {/* A1 centered amber rule at very top of bar */}
@@ -71,6 +101,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
       {/* Wood plinth accent */}
       <div
         aria-hidden="true"
+        className="player-wood-accent"
         style={{
           width: '9px', height: '56px',
           borderRadius: '2px',
@@ -81,9 +112,14 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
       />
 
       {/* Spinning disc + tonearm */}
-      <div aria-hidden="true" style={{ position: 'relative', width: '62px', height: '62px', flexShrink: 0 }}>
+      <div
+        aria-hidden="true"
+        className="player-disc-wrap"
+        style={{ position: 'relative', width: '62px', height: '62px', flexShrink: 0 }}
+      >
         {/* Vinyl disc */}
         <div
+          className="player-disc"
           style={{
             width: '62px', height: '62px',
             borderRadius: '50%',
@@ -165,13 +201,16 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
       </div>
 
       {/* Track info */}
-      <div style={{ display: 'flex', flexDirection: 'column', minWidth: '220px' }}>
+      <div className="player-track-info">
         <span style={{
           fontFamily: "Georgia, 'Times New Roman', serif",
           fontStyle: 'italic',
           fontSize: '14px',
           color: '#f0e8dc',
           letterSpacing: '0.03em',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}>
           {track.title}
         </span>
@@ -197,7 +236,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
       </div>
 
       {/* Transport controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>
         <button
           onClick={onPrev}
           aria-label="Previous"
@@ -218,6 +257,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
             background: 'rgba(255,235,210,0.03)',
             cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           {isPlaying ? (
@@ -243,8 +283,12 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
         </button>
       </div>
 
-      {/* Waveform */}
-      <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '30px', flexShrink: 0 }}>
+      {/* Waveform — desktop only */}
+      <div
+        aria-hidden="true"
+        className="player-waveform"
+        style={{ alignItems: 'center', gap: '2px', height: '30px', flexShrink: 0 }}
+      >
         {WAVE_HEIGHTS.map((h, i) => {
           const played = (i / WAVE_HEIGHTS.length) < PLAYED_FRAC
           return (
@@ -265,8 +309,8 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
         })}
       </div>
 
-      {/* Groove progress track */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {/* Groove progress track — desktop only */}
+      <div className="player-groove">
         <div style={{
           fontSize: '9px',
           letterSpacing: '0.18em',
@@ -312,10 +356,11 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
         </div>
       </div>
 
-      {/* Volume */}
+      {/* Volume — desktop only */}
       <button
         aria-label="Volume"
-        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', opacity: 0.38, flexShrink: 0 }}
+        className="player-volume"
+        style={{ background: 'none', border: 'none', cursor: 'pointer', alignItems: 'center', gap: '10px', opacity: 0.38, flexShrink: 0 }}
       >
         <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
           <path d="M1 5h3l5-4v14l-5-4H1V5z" stroke="#f0e8dc" strokeWidth="1.1" strokeLinejoin="round" fill="none"/>

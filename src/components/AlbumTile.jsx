@@ -2,6 +2,14 @@
 // Vinyl-disc motif, catalog number, italic serif title, genre/duration meta,
 // play ring button. Clicking calls onOpen(album.id).
 // Props: album { id, title, year, catalogId?, genre?, duration?, unreleased? }, onOpen(id)
+// Mobile: reduced tile padding.
+
+const albumTileStyles = `
+  .album-tile-inner { padding: 34px 38px 30px; }
+  @media (max-width: 768px) {
+    .album-tile-inner { padding: 20px 18px 18px; }
+  }
+`
 
 export default function AlbumTile({ album, onOpen }) {
   return (
@@ -14,7 +22,6 @@ export default function AlbumTile({ album, onOpen }) {
       style={{
         position: 'relative',
         background: 'rgba(255,235,210,0.04)',
-        padding: '34px 38px 30px',
         cursor: 'pointer',
         overflow: 'hidden',
         minHeight: '180px',
@@ -26,6 +33,8 @@ export default function AlbumTile({ album, onOpen }) {
       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,235,210,0.075)' }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,235,210,0.04)' }}
     >
+      <style>{albumTileStyles}</style>
+
       {/* Vinyl-disc motif — upper-right (B1 vocabulary) */}
       <div
         aria-hidden="true"
@@ -65,7 +74,7 @@ export default function AlbumTile({ album, onOpen }) {
       />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2 }}>
+      <div className="album-tile-inner" style={{ position: 'relative', zIndex: 2 }}>
         {album.catalogId && (
           <p style={{
             fontFamily: 'system-ui, Arial, sans-serif',
@@ -107,7 +116,7 @@ export default function AlbumTile({ album, onOpen }) {
             </span>
           )}
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '8px', flexWrap: 'wrap' }}>
           {album.genre && (
             <span style={{
               fontFamily: 'system-ui, Arial, sans-serif',

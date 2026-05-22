@@ -23,6 +23,52 @@ const styles = `
     0%, 100% { opacity: 0.20; }
     50%       { opacity: 0.60; }
   }
+
+  .hero-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.6rem, 14vw, 7rem);
+    font-weight: 400;
+    letter-spacing: 0.36em;
+    color: #f0e8dc;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 5;
+    text-shadow: 0 0 60px rgba(232,176,96,0.36), 0 0 120px rgba(200,137,58,0.20), 0 0 200px rgba(160,104,40,0.10);
+  }
+  .hero-ambient-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 720px; height: 640px;
+    background: radial-gradient(ellipse at center, rgba(200,137,58,0.11) 0%, rgba(160,104,40,0.06) 42%, transparent 70%);
+    border-radius: 50%;
+    animation: centerPulse 7s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .hero-floor-pool {
+    position: absolute;
+    left: 50%; top: 56%;
+    transform: translateX(-50%);
+    width: 500px; height: 120px;
+    background: radial-gradient(ellipse 100% 100% at 50% 20%, rgba(200,137,58,0.09) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: poolRise 3.0s ease-out forwards;
+    opacity: 0;
+  }
+  @media (max-width: 768px) {
+    .hero-name {
+      letter-spacing: 0.12em;
+    }
+    .hero-ambient-glow {
+      width: 95vw; height: 85vw;
+    }
+    .hero-floor-pool {
+      width: 90vw; height: 20vw;
+    }
+  }
 `
 
 export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
@@ -35,7 +81,7 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        padding: '60px 40px 80px',
+        padding: '60px 20px 80px',
         position: 'relative',
         overflow: 'hidden',
         background: '#0f0805',
@@ -44,20 +90,7 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
       <style>{styles}</style>
 
       {/* Ambient center glow */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          top: '50%', left: '50%',
-          transform: 'translate(-50%,-50%)',
-          width: '720px', height: '640px',
-          background: 'radial-gradient(ellipse at center, rgba(200,137,58,0.11) 0%, rgba(160,104,40,0.06) 42%, transparent 70%)',
-          borderRadius: '50%',
-          animation: 'centerPulse 7s ease-in-out infinite alternate',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
+      <div aria-hidden="true" className="hero-ambient-glow" />
 
       {/* Spotlight cone */}
       <div
@@ -77,36 +110,10 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
       />
 
       {/* Stage floor pool */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          left: '50%', top: '56%',
-          transform: 'translateX(-50%)',
-          width: '500px', height: '120px',
-          background: 'radial-gradient(ellipse 100% 100% at 50% 20%, rgba(200,137,58,0.09) 0%, transparent 70%)',
-          borderRadius: '50%',
-          pointerEvents: 'none',
-          zIndex: 1,
-          animation: 'poolRise 3.0s ease-out forwards',
-          opacity: 0,
-        }}
-      />
+      <div aria-hidden="true" className="hero-floor-pool" />
 
       {/* Artist name */}
-      <h1
-        style={{
-          fontFamily: "Georgia, 'Times New Roman', serif",
-          fontSize: '7.4vw',
-          fontWeight: 400,
-          letterSpacing: '0.36em',
-          color: '#f0e8dc',
-          textTransform: 'uppercase',
-          position: 'relative',
-          zIndex: 5,
-          textShadow: '0 0 60px rgba(232,176,96,0.36), 0 0 120px rgba(200,137,58,0.20), 0 0 200px rgba(160,104,40,0.10)',
-        }}
-      >
+      <h1 className="hero-name">
         Jacques
       </h1>
 
