@@ -76,9 +76,20 @@ const WAVE_HEIGHTS = [10,18,8,26,14,6,22,10,30,16,8,24,12,6,20,10,28,14,8,22,12,
 const PLAYED_FRAC = 0.24
 
 export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPrev, onNext }) {
-  // FIX 2 — tonearm starts parked and sweeps to engaged on first mount.
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  // Tonearm gesture state: parked when paused; lifts + re-places on every
+  // start action AND on every track change while playing, so prev/next and
+  // tile-to-tile switches show the arm move instead of sitting still.
+  const [armEngaged, setArmEngaged] = useState(false)
+  useEffect(() => {
+    if (!isPlaying) {
+      setArmEngaged(false)
+      return
+    }
+    // Park, then engage on the next frame so the transition replays.
+    setArmEngaged(false)
+    const t = setTimeout(() => setArmEngaged(true), 80)
+    return () => clearTimeout(t)
+  }, [isPlaying, track?.id])
 
   if (!track) return null
 
@@ -168,7 +179,7 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
           top: '4px', right: '-10px',
           width: '32px', height: '44px',
           transformOrigin: '24px 6px',
-          transform: mounted && isPlaying ? 'rotate(0deg)' : 'rotate(-28deg)',
+          transform: armEngaged ? 'rotate(0deg)' : 'rotate(-28deg)',
           transition: 'transform 1.2s ease-out',
           zIndex: 5,
           pointerEvents: 'none',
