@@ -20,7 +20,7 @@ const collectionStyles = `
     .collection-section { padding: 64px 24px 72px; }
     /* Tiles carry a ~14px layered wood-frame box-shadow on every side, so the
        gap must clear 28px (both frames) for them to sit cleanly stacked. */
-    .collection-grid { grid-template-columns: 1fr; gap: 20px; }
+    .collection-grid { grid-template-columns: 1fr; gap: 30px; }
   }
   @media (min-width: 769px) and (max-width: 1024px) {
     .collection-section { padding: 72px 32px 80px; }
