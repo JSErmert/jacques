@@ -106,17 +106,18 @@ export default function BackgroundLayer() {
           zIndex: 0,
           pointerEvents: 'none',
           background: [
-            // Inner bright beam core — clamped so the absolute width stays
-            // narrow even on wide desktops; mobile (43px = 11vw of 390) is
-            // preserved by the min, desktop is capped by the max at ~55px.
-            'radial-gradient(ellipse clamp(38px, 11vw, 55px) 76vh at 50% -8vh, rgba(232,176,96,0.34) 0%, rgba(200,137,58,0.17) 24%, rgba(160,104,40,0.06) 58%, transparent 82%)',
-            // Mid halo — softens the cone, also clamped
-            'radial-gradient(ellipse clamp(85px, 24vw, 125px) 78vh at 50% -5vh, rgba(200,137,58,0.13) 0%, rgba(160,104,40,0.05) 44%, transparent 80%)',
-            // Outermost diffuse upper warmth — wider but still capped
-            'radial-gradient(ellipse clamp(240px, 55vw, 360px) 55vh at 50% -12vh, rgba(160,104,40,0.06) 0%, transparent 65%)',
-            // FLOOR POOL — viewport-relative ellipse, scroll-aware vertical
-            // position. Clamped horizontally so desktop doesn't widen out.
-            `radial-gradient(ellipse clamp(140px, 38vw, 320px) 14vh at 50% ${poolPct}%, rgba(232,176,96,0.20) 0%, rgba(200,137,58,0.11) 44%, rgba(160,104,40,0.04) 72%, transparent 92%)`,
+            // Beam dimensions are TIGHT-clamped — all three layers cap at
+            // approximately what mobile (~390px wide) naturally produces from
+            // 11vw / 24vw / 55vw, so desktop renders the beam at the SAME
+            // absolute width as mobile rather than scaling up to a "cloud".
+            // Inner bright core
+            'radial-gradient(ellipse clamp(40px, 11vw, 48px) 76vh at 50% -8vh, rgba(232,176,96,0.34) 0%, rgba(200,137,58,0.17) 24%, rgba(160,104,40,0.06) 58%, transparent 82%)',
+            // Mid halo — softens the cone read
+            'radial-gradient(ellipse clamp(88px, 24vw, 100px) 78vh at 50% -5vh, rgba(200,137,58,0.13) 0%, rgba(160,104,40,0.05) 44%, transparent 80%)',
+            // Outermost diffuse — caps near mobile's natural width
+            'radial-gradient(ellipse clamp(200px, 55vw, 225px) 55vh at 50% -12vh, rgba(160,104,40,0.06) 0%, transparent 65%)',
+            // FLOOR POOL — sized to match mobile width too (~150px)
+            `radial-gradient(ellipse clamp(140px, 38vw, 165px) 14vh at 50% ${poolPct}%, rgba(232,176,96,0.20) 0%, rgba(200,137,58,0.11) 44%, rgba(160,104,40,0.04) 72%, transparent 92%)`,
             // Side washes — barely-there room ambiance
             'radial-gradient(ellipse 28% 50% at 3% 56%, rgba(138,74,24,0.07) 0%, transparent 76%)',
             'radial-gradient(ellipse 28% 50% at 97% 56%, rgba(138,74,24,0.07) 0%, transparent 76%)',
