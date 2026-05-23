@@ -45,13 +45,39 @@ const styles = `
     .player-waveform { display: none; }
     .player-groove { display: none; }
     .player-volume { display: none; }
+    /* Disc — slightly bigger on mobile (was 46) so it reads as the focal element */
     .player-disc-wrap {
-      width: 46px !important;
-      height: 46px !important;
+      width: 54px !important;
+      height: 54px !important;
     }
     .player-disc {
-      width: 46px !important;
-      height: 46px !important;
+      width: 54px !important;
+      height: 54px !important;
+    }
+    /* Tonearm — proportionally smaller so it sits on the disc, not over it */
+    .player-tonearm {
+      width: 26px !important;
+      height: 36px !important;
+      top: 3px !important;
+      right: -8px !important;
+      transform-origin: 20px 5px !important;
+    }
+    .player-tonearm-stem {
+      top: 5px !important;
+      left: 18px !important;
+      width: 2px !important;
+      height: 31px !important;
+    }
+    .player-tonearm-base {
+      left: 11px !important;
+      width: 8px !important;
+      height: 4px !important;
+    }
+    .player-tonearm-head {
+      top: 0 !important;
+      left: 14px !important;
+      width: 8px !important;
+      height: 8px !important;
     }
     .player-track-info {
       min-width: 0;
@@ -174,40 +200,52 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
         </div>
 
         {/* Tonearm — parked (~-28deg) when not playing, engaged (0deg) when playing */}
-        <div style={{
-          position: 'absolute',
-          top: '4px', right: '-10px',
-          width: '32px', height: '44px',
-          transformOrigin: '24px 6px',
-          transform: armEngaged ? 'rotate(0deg)' : 'rotate(-28deg)',
-          transition: 'transform 1.2s ease-out',
-          zIndex: 5,
-          pointerEvents: 'none',
-        }}>
-          <div style={{
+        <div
+          className="player-tonearm"
+          style={{
             position: 'absolute',
-            top: '6px', left: '22px',
-            width: '2px', height: '38px',
-            background: 'linear-gradient(to bottom, rgba(200,137,58,0.70), rgba(200,137,58,0.28))',
-            borderRadius: '1px',
-            transformOrigin: 'top center',
-            transform: 'rotate(-12deg)',
-          }} />
-          <div style={{
-            position: 'absolute',
-            bottom: 0, left: '14px',
-            width: '10px', height: '5px',
-            borderRadius: '1px',
-            background: 'rgba(200,137,58,0.55)',
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: 0, left: '18px',
-            width: '10px', height: '10px',
-            borderRadius: '50%',
-            border: '1.5px solid rgba(200,137,58,0.45)',
-            background: 'rgba(10,5,2,0.8)',
-          }} />
+            top: '4px', right: '-10px',
+            width: '32px', height: '44px',
+            transformOrigin: '24px 6px',
+            transform: armEngaged ? 'rotate(0deg)' : 'rotate(-28deg)',
+            transition: 'transform 1.2s ease-out',
+            zIndex: 5,
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            className="player-tonearm-stem"
+            style={{
+              position: 'absolute',
+              top: '6px', left: '22px',
+              width: '2px', height: '38px',
+              background: 'linear-gradient(to bottom, rgba(200,137,58,0.70), rgba(200,137,58,0.28))',
+              borderRadius: '1px',
+              transformOrigin: 'top center',
+              transform: 'rotate(-12deg)',
+            }}
+          />
+          <div
+            className="player-tonearm-base"
+            style={{
+              position: 'absolute',
+              bottom: 0, left: '14px',
+              width: '10px', height: '5px',
+              borderRadius: '1px',
+              background: 'rgba(200,137,58,0.55)',
+            }}
+          />
+          <div
+            className="player-tonearm-head"
+            style={{
+              position: 'absolute',
+              top: 0, left: '18px',
+              width: '10px', height: '10px',
+              borderRadius: '50%',
+              border: '1.5px solid rgba(200,137,58,0.45)',
+              background: 'rgba(10,5,2,0.8)',
+            }}
+          />
         </div>
       </div>
 
