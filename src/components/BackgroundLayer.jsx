@@ -107,14 +107,16 @@ export default function BackgroundLayer() {
               <stop offset="42%"  stopColor="#a06828" stopOpacity="0.06"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
+            {/* Beam stops bumped ~+25% intensity */}
             <linearGradient id="lg-cone" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.22"/>
-              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.12"/>
-              <stop offset="70%"  stopColor="#a06828" stopOpacity="0.05"/>
+              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.28"/>
+              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.15"/>
+              <stop offset="70%"  stopColor="#a06828" stopOpacity="0.06"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </linearGradient>
+            {/* Floor pool stops bumped ~+25% intensity */}
             <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.09"/>
+              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.115"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
             <radialGradient id="rg-left" cx="14%" cy="62%" r="34%">
@@ -152,9 +154,12 @@ export default function BackgroundLayer() {
             <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
             <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
           </g>
-          {/* Stage floor glow — gently feathered */}
+          {/* Stage floor glow — pushed much further down (cy 900 -> 1040) so
+              the brightest core sits below the viewport and only the soft
+              upper fringe reads as a horizon glow at the bottom of screen.
+              Larger ry compensates so plenty still shines through. */}
           <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="900" rx="540" ry="160" fill="url(#rg-floor)" opacity="0.9"/>
+            <ellipse cx="720" cy="1040" rx="620" ry="210" fill="url(#rg-floor)" opacity="1.0"/>
           </g>
           {/* Symmetric side blooms */}
           <rect width="1440" height="900" fill="url(#rg-left)"/>
@@ -177,10 +182,10 @@ export default function BackgroundLayer() {
             inset: 0,
             pointerEvents: 'none',
             background: [
-              // Warmth concentrated inside the beam — volumetric scattering feel
-              'radial-gradient(ellipse 28% 62% at 50% 32%, rgba(232,176,96,0.06) 0%, rgba(200,137,58,0.025) 55%, transparent 82%)',
-              // Upper-air bloom — light hitting the haze near the source
-              'radial-gradient(ellipse 78% 32% at 50% 12%, rgba(200,137,58,0.045) 0%, transparent 72%)',
+              // Warmth concentrated inside the beam — volumetric scattering feel (+25%)
+              'radial-gradient(ellipse 28% 62% at 50% 32%, rgba(232,176,96,0.075) 0%, rgba(200,137,58,0.031) 55%, transparent 82%)',
+              // Upper-air bloom — light hitting the haze near the source (+25%)
+              'radial-gradient(ellipse 78% 32% at 50% 12%, rgba(200,137,58,0.056) 0%, transparent 72%)',
             ].join(','),
           }}
         />
