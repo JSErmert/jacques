@@ -89,11 +89,87 @@ export default function BackgroundLayer() {
           animation: 'driftCool 18s ease-in-out infinite alternate-reverse',
         }} />
 
-        {/* Soft spotlight beam — believable stage light from above, built
-            from elliptical CSS gradients (no hard polygon cone). The narrow
-            inner core + wider halo creates the directional beam read; the
-            floor pool gives it somewhere to land. Reads as gradient and
-            realistic at every scroll position — hero or below. */}
+        {/* ORIGINAL proscenium cone restored — recognizable spotlight SHAPE.
+            Polygons run through a Gaussian-blur filter so the hard cone
+            edges feather into soft volumetric falloff. Polygons extend
+            beyond the viewBox (y=-80..980) so the blur tails dissolve past
+            the visible area instead of clipping. */}
+        <svg
+          viewBox="0 0 1440 900"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 1 }}
+          aria-hidden="true"
+        >
+          <defs>
+            <radialGradient id="rg-center" cx="50%" cy="47%" r="44%">
+              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.15"/>
+              <stop offset="42%"  stopColor="#a06828" stopOpacity="0.06"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </radialGradient>
+            <linearGradient id="lg-cone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.22"/>
+              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.12"/>
+              <stop offset="70%"  stopColor="#a06828" stopOpacity="0.05"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </linearGradient>
+            <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
+              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.09"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="rg-left" cx="14%" cy="62%" r="34%">
+              <stop offset="0%"   stopColor="#a06828" stopOpacity="0.08"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="rg-right" cx="86%" cy="62%" r="34%">
+              <stop offset="0%"   stopColor="#a06828" stopOpacity="0.08"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </radialGradient>
+            <linearGradient id="lg-horizon" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stopColor="#a06828" stopOpacity="0"/>
+              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.04"/>
+              <stop offset="50%"  stopColor="#e8b060" stopOpacity="0.03"/>
+              <stop offset="70%"  stopColor="#c8893a" stopOpacity="0.04"/>
+              <stop offset="100%" stopColor="#a06828" stopOpacity="0"/>
+            </linearGradient>
+            <linearGradient id="lg-topvign" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="#0f0805" stopOpacity="0.55"/>
+              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
+            </linearGradient>
+            {/* Heavy blur — turns the polygon cones into soft volumetric light */}
+            <filter id="coneSoften" x="-15%" y="-15%" width="130%" height="130%">
+              <feGaussianBlur stdDeviation="42"/>
+            </filter>
+            {/* Gentle blur — feathers horizon line + floor pool edges */}
+            <filter id="atmoSoften" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="14"/>
+            </filter>
+          </defs>
+          <rect width="1440" height="900" fill="#0f0805"/>
+          <rect width="1440" height="900" fill="url(#rg-center)"/>
+          {/* Proscenium cone — Gaussian-feathered, polygons extended past viewBox */}
+          <g filter="url(#coneSoften)">
+            <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
+            <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
+          </g>
+          {/* Stage floor glow — gently feathered */}
+          <g filter="url(#atmoSoften)">
+            <ellipse cx="720" cy="900" rx="540" ry="160" fill="url(#rg-floor)" opacity="0.9"/>
+          </g>
+          {/* Symmetric side blooms */}
+          <rect width="1440" height="900" fill="url(#rg-left)"/>
+          <rect width="1440" height="900" fill="url(#rg-right)"/>
+          {/* Horizon band — gently feathered so it doesn't read as a hard line */}
+          <g filter="url(#atmoSoften)">
+            <ellipse cx="720" cy="445" rx="880" ry="42" fill="url(#lg-horizon)" opacity="0.9"/>
+          </g>
+          {/* Top vignette */}
+          <rect width="1440" height="110" fill="url(#lg-topvign)"/>
+        </svg>
+
+        {/* Atmospheric haze — volumetric warmth scattered in the beam path,
+            and a soft upper-air glow. Adds the "light through air" feel
+            on top of the cone shape. */}
         <div
           aria-hidden="true"
           style={{
@@ -101,19 +177,10 @@ export default function BackgroundLayer() {
             inset: 0,
             pointerEvents: 'none',
             background: [
-              // Inner bright core — tall narrow beam from above
-              'radial-gradient(ellipse 14% 68% at 50% -6%, rgba(232,176,96,0.32) 0%, rgba(200,137,58,0.16) 24%, rgba(160,104,40,0.06) 56%, transparent 82%)',
-              // Mid halo around the beam — softens the cone edges
-              'radial-gradient(ellipse 32% 72% at 50% -4%, rgba(200,137,58,0.13) 0%, rgba(160,104,40,0.05) 44%, transparent 78%)',
-              // Wider diffuse warmth — ambient room
-              'radial-gradient(ellipse 62% 58% at 50% -8%, rgba(160,104,40,0.06) 0%, transparent 65%)',
-              // Stage floor pool — where the beam lands
-              'radial-gradient(ellipse 30% 16% at 50% 100%, rgba(200,137,58,0.11) 0%, rgba(160,104,40,0.04) 50%, transparent 78%)',
-              // Center ambient — soft warmth in the middle of the scene
-              'radial-gradient(ellipse 58% 52% at 50% 48%, rgba(160,104,40,0.05) 0%, transparent 70%)',
-              // Side washes — barely-there room ambiance
-              'radial-gradient(ellipse 28% 48% at 3% 56%, rgba(138,74,24,0.06) 0%, transparent 76%)',
-              'radial-gradient(ellipse 28% 48% at 97% 56%, rgba(138,74,24,0.06) 0%, transparent 76%)',
+              // Warmth concentrated inside the beam — volumetric scattering feel
+              'radial-gradient(ellipse 28% 62% at 50% 32%, rgba(232,176,96,0.06) 0%, rgba(200,137,58,0.025) 55%, transparent 82%)',
+              // Upper-air bloom — light hitting the haze near the source
+              'radial-gradient(ellipse 78% 32% at 50% 12%, rgba(200,137,58,0.045) 0%, transparent 72%)',
             ].join(','),
           }}
         />
