@@ -89,56 +89,34 @@ export default function BackgroundLayer() {
           animation: 'driftCool 18s ease-in-out infinite alternate-reverse',
         }} />
 
-        {/* Atmospheric lighting — soft radial blobs only, no hard cone polygons.
-            The old proscenium polygons read as a "cheap spotlight" once the
-            hero scrolled out from under them; this gradient-only approach
-            stays gradient and realistic at every scroll position. */}
-        <svg
-          viewBox="0 0 1440 900"
-          preserveAspectRatio="xMidYMid slice"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 1 }}
+        {/* Soft spotlight beam — believable stage light from above, built
+            from elliptical CSS gradients (no hard polygon cone). The narrow
+            inner core + wider halo creates the directional beam read; the
+            floor pool gives it somewhere to land. Reads as gradient and
+            realistic at every scroll position — hero or below. */}
+        <div
           aria-hidden="true"
-        >
-          <defs>
-            {/* Soft warm spotlight from above — replaces the hard polygons.
-                Centered just above the viewport so the falloff carries warmth
-                gently down through the whole scene. */}
-            <radialGradient id="rg-spotlight" cx="50%" cy="-8%" r="62%">
-              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.22"/>
-              <stop offset="22%"  stopColor="#c8893a" stopOpacity="0.10"/>
-              <stop offset="55%"  stopColor="#a06828" stopOpacity="0.04"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-            {/* Center ambient pool — wide, very soft */}
-            <radialGradient id="rg-center" cx="50%" cy="48%" r="52%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.12"/>
-              <stop offset="48%"  stopColor="#a06828" stopOpacity="0.05"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-            {/* Floor warmth — soft pool, no hard ellipse edges */}
-            <radialGradient id="rg-floor" cx="50%" cy="104%" r="60%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.10"/>
-              <stop offset="55%"  stopColor="#a06828" stopOpacity="0.04"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-            {/* Side washes — barely-there room-light ambiance */}
-            <radialGradient id="rg-left" cx="4%" cy="56%" r="46%">
-              <stop offset="0%"   stopColor="#8a4a18" stopOpacity="0.07"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-            <radialGradient id="rg-right" cx="96%" cy="56%" r="46%">
-              <stop offset="0%"   stopColor="#8a4a18" stopOpacity="0.07"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-          </defs>
-          <rect width="1440" height="900" fill="#0f0805"/>
-          <rect width="1440" height="900" fill="url(#rg-spotlight)"/>
-          <rect width="1440" height="900" fill="url(#rg-center)"/>
-          <rect width="1440" height="900" fill="url(#rg-floor)"/>
-          <rect width="1440" height="900" fill="url(#rg-left)"/>
-          <rect width="1440" height="900" fill="url(#rg-right)"/>
-        </svg>
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            background: [
+              // Inner bright core — tall narrow beam from above
+              'radial-gradient(ellipse 14% 68% at 50% -6%, rgba(232,176,96,0.32) 0%, rgba(200,137,58,0.16) 24%, rgba(160,104,40,0.06) 56%, transparent 82%)',
+              // Mid halo around the beam — softens the cone edges
+              'radial-gradient(ellipse 32% 72% at 50% -4%, rgba(200,137,58,0.13) 0%, rgba(160,104,40,0.05) 44%, transparent 78%)',
+              // Wider diffuse warmth — ambient room
+              'radial-gradient(ellipse 62% 58% at 50% -8%, rgba(160,104,40,0.06) 0%, transparent 65%)',
+              // Stage floor pool — where the beam lands
+              'radial-gradient(ellipse 30% 16% at 50% 100%, rgba(200,137,58,0.11) 0%, rgba(160,104,40,0.04) 50%, transparent 78%)',
+              // Center ambient — soft warmth in the middle of the scene
+              'radial-gradient(ellipse 58% 52% at 50% 48%, rgba(160,104,40,0.05) 0%, transparent 70%)',
+              // Side washes — barely-there room ambiance
+              'radial-gradient(ellipse 28% 48% at 3% 56%, rgba(138,74,24,0.06) 0%, transparent 76%)',
+              'radial-gradient(ellipse 28% 48% at 97% 56%, rgba(138,74,24,0.06) 0%, transparent 76%)',
+            ].join(','),
+          }}
+        />
       </div>
     </>
   )
