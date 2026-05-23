@@ -3,13 +3,17 @@
 // Visual CSS ported from docs/superpowers/specs/variants/B3-archive-stage/mockup.html.
 // NO pillars here — pillars live in the post-hero sections wrapper only.
 //
-// CTA animation: the vinyl-icon circle starts flush against the "Begin
-// listening" text (natural flex gap), then on Begin click slides smoothly
-// leftward as the text widens to "Now Playing: [Song]". This is achieved
-// by measuring the rendered width of each text via useLayoutEffect and
-// transitioning the text wrapper's `width` between the two measured values;
-// because the parent flex container centers the button, a wider wrapper
-// shifts the whole button (circle included) leftward in sync.
+// CTA layout: the TEXT is what sits dead-centered in the spotlight pool
+// (viewport center). The vinyl-icon circle hangs off to its LEFT.
+// Mechanism: the button is centered by the parent flexbox; its width
+// animates between the two measured text widths. Both texts live INSIDE
+// the button, positioned at left:50% with translateX(-50%), so they
+// stay centered in the button (and therefore in the viewport) at every
+// frame of the width transition. The circle is absolute-positioned with
+// right: calc(100% + 12px), i.e. 12px to the LEFT of the button's left
+// edge. As the button widens its left edge moves outward (leftward), so
+// the circle slides leftward in sync — exactly the motion the operator
+// described.
 
 import { useState, useRef, useLayoutEffect } from 'react'
 
@@ -178,12 +182,13 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
         Classical &nbsp;&nbsp;·&nbsp;&nbsp; Jazz &nbsp;&nbsp;·&nbsp;&nbsp; Composition
       </p>
 
-      {/* Single CTA slot — the circle is persistent across states. Before
-          gateOpen the text reads "Begin listening" and the element is a
-          live button. Once gateOpen, the same element shows "Now Playing:
-          [Song]" in the exact same physical location, with the circle
-          unchanged. Two text spans are stacked over a sized placeholder so
-          neither the circle nor the surrounding layout shifts on swap. */}
+      {/* CTA: text centered in viewport, circle hangs off its left side.
+          The button width matches the current text width (animated), and
+          both texts are absolute-positioned at left:50% within the button
+          so they stay perfectly centered as the button widens or narrows.
+          The circle is absolute-positioned 12px to the LEFT of the button's
+          left edge; as the button widens, its left edge moves outward and
+          the circle slides leftward in sync. */}
       <button
         onClick={!gateOpen ? onBegin : undefined}
         disabled={gateOpen}
@@ -199,69 +204,66 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
           border: 'none',
           cursor: gateOpen ? 'default' : 'pointer',
           position: 'relative',
+          display: 'inline-block',
           zIndex: 5,
           padding: '12px 0',
           marginTop: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          transition: 'color 0.5s',
+          width: ctaWidth,
+          minHeight: '20px',
+          overflow: 'visible',
+          transition: 'color 0.5s, width 0.6s cubic-bezier(0.22,1,0.36,1)',
         }}
       >
-        {/* Persistent vinyl-icon circle — never fades, never moves */}
+        {/* Vinyl-icon circle — anchored 12px LEFT of the button's left edge.
+            As the button widens, the left edge moves outward and the circle
+            slides smoothly leftward with it. */}
         <span
           aria-hidden="true"
           style={{
+            position: 'absolute',
+            right: 'calc(100% + 12px)',
+            top: '50%',
+            transform: 'translateY(-50%)',
             width: '20px',
             height: '20px',
             borderRadius: '50%',
             border: '1.5px solid rgba(200,137,58,0.55)',
-            position: 'relative',
-            flexShrink: 0,
             display: 'block',
           }}
         />
 
-        {/* Crossfading text with animated width. Both spans are absolute-
-            positioned at left:0, top:0; the wrapper's width transitions
-            between the measured begin / Now-Playing widths so the active
-            text always extends from the circle to the right edge — no dead
-            space, and the circle slides left as the wrapper widens. */}
+        {/* "Begin listening" — centered inside the button */}
         <span
+          ref={beginRef}
           style={{
-            position: 'relative',
-            display: 'inline-block',
-            width: ctaWidth,
-            height: '1em',
-            transition: 'width 0.6s cubic-bezier(0.22,1,0.36,1)',
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            whiteSpace: 'nowrap',
+            opacity: gateOpen ? 0 : 1,
+            transition: 'opacity 0.5s ease',
           }}
         >
-          <span
-            ref={beginRef}
-            style={{
-              position: 'absolute',
-              left: 0, top: 0,
-              whiteSpace: 'nowrap',
-              opacity: gateOpen ? 0 : 1,
-              transition: 'opacity 0.5s ease',
-            }}
-          >
-            Begin listening
-          </span>
-          <span
-            ref={npRef}
-            aria-live="polite"
-            aria-atomic="true"
-            style={{
-              position: 'absolute',
-              left: 0, top: 0,
-              whiteSpace: 'nowrap',
-              opacity: gateOpen && nowPlayingTitle ? 1 : 0,
-              transition: 'opacity 0.5s ease',
-            }}
-          >
-            Now Playing: {nowPlayingTitle ?? 'Nocturne in E-flat'}
-          </span>
+          Begin listening
+        </span>
+
+        {/* "Now Playing: [Song]" — centered inside the button, crossfaded */}
+        <span
+          ref={npRef}
+          aria-live="polite"
+          aria-atomic="true"
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            whiteSpace: 'nowrap',
+            opacity: gateOpen && nowPlayingTitle ? 1 : 0,
+            transition: 'opacity 0.5s ease',
+          }}
+        >
+          Now Playing: {nowPlayingTitle ?? 'Nocturne in E-flat'}
         </span>
       </button>
 
