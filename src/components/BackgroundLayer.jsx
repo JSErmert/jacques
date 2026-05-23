@@ -142,11 +142,10 @@ export default function BackgroundLayer() {
             <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
             <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
           </g>
-          {/* Stage floor glow — bright peak at SVG y=707 (~78% down, just
-              inside the bottom quartile). Midpoint between the too-deep
-              cy=820 and the too-high cy=595 versions. */}
+          {/* Stage floor glow — bright peak at SVG y=651 (~72% down).
+              Nudged 6.25% up from cy=707 per operator. */}
           <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="707" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
+            <ellipse cx="720" cy="651" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
           </g>
           {/* Symmetric side blooms */}
           <rect width="1440" height="900" fill="url(#rg-left)"/>
