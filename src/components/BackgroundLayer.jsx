@@ -1,6 +1,11 @@
 // Fixed full-screen background: chocolate base + proscenium spotlight cone +
 // warm ambient field + drifting animations. Paper grain is in index.css (body::after).
-// All visual CSS ported from docs/superpowers/specs/variants/B3-archive-stage/mockup.html.
+// Floor pool position is SCROLL-AWARE: pushed up on the hero so the Begin
+// Listening CTA sits centered in the pool; eases to its post-hero position
+// once you scroll past the hero. Beam carries subtle volumetric ray streaks
+// matching the floor's "light reflection" texture.
+
+import { useEffect, useState } from 'react'
 
 const styles = `
   @keyframes driftWarm {
@@ -40,7 +45,25 @@ const styles = `
   }
 `
 
+// Pool position interpolates linearly between these as scrollY moves from 0
+// (top of hero) to viewport-height (hero scrolled out of view).
+const POOL_CY_HERO = 565   // ~63% down — centered on Begin Listening
+const POOL_CY_AFTER = 651  // ~72% down — settled in bottom quartile
+
 export default function BackgroundLayer() {
+  const [poolCy, setPoolCy] = useState(POOL_CY_HERO)
+
+  useEffect(() => {
+    const onScroll = () => {
+      const vh = window.innerHeight || 1
+      const p = Math.min(window.scrollY / vh, 1)
+      setPoolCy(POOL_CY_HERO + (POOL_CY_AFTER - POOL_CY_HERO) * p)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
       <style>{styles}</style>
@@ -142,10 +165,21 @@ export default function BackgroundLayer() {
             <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
             <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
           </g>
-          {/* Stage floor glow — bright peak at SVG y=651 (~72% down).
-              Nudged 6.25% up from cy=707 per operator. */}
+          {/* Volumetric "rays" within the beam — same atmoSoften blur as the
+              floor pool so they carry the same banded/light-reflection texture
+              the operator likes on the floor. Thin tall ellipses offset
+              slightly across the cone width = subtle dust-in-light streaks. */}
+          <g filter="url(#atmoSoften)" opacity="0.65">
+            <ellipse cx="688" cy="80"  rx="11" ry="700" fill="url(#lg-cone)" opacity="0.40"/>
+            <ellipse cx="720" cy="40"  rx="7"  ry="760" fill="url(#lg-cone)" opacity="0.55"/>
+            <ellipse cx="752" cy="100" rx="10" ry="680" fill="url(#lg-cone)" opacity="0.40"/>
+            <ellipse cx="704" cy="200" rx="5"  ry="600" fill="url(#lg-cone)" opacity="0.32"/>
+            <ellipse cx="740" cy="160" rx="6"  ry="640" fill="url(#lg-cone)" opacity="0.34"/>
+          </g>
+          {/* Stage floor glow — cy is scroll-aware (see useEffect above):
+              POOL_CY_HERO (565, hero) -> POOL_CY_AFTER (651, post-hero). */}
           <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="651" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
+            <ellipse cx="720" cy={poolCy} rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
           </g>
           {/* Symmetric side blooms */}
           <rect width="1440" height="900" fill="url(#rg-left)"/>

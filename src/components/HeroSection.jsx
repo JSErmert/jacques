@@ -147,20 +147,26 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
         Classical &nbsp;&nbsp;·&nbsp;&nbsp; Jazz &nbsp;&nbsp;·&nbsp;&nbsp; Composition
       </p>
 
-      {/* Begin listening CTA / Now Playing — same slot, cross-faded */}
+      {/* Single CTA slot — the circle is persistent across states. Before
+          gateOpen the text reads "Begin listening" and the element is a
+          live button. Once gateOpen, the same element shows "Now Playing:
+          [Song]" in the exact same physical location, with the circle
+          unchanged. Two text spans are stacked over a sized placeholder so
+          neither the circle nor the surrounding layout shifts on swap. */}
       <button
-        onClick={onBegin}
-        aria-label="Begin listening"
+        onClick={!gateOpen ? onBegin : undefined}
+        disabled={gateOpen}
+        aria-label={!gateOpen ? 'Begin listening' : undefined}
         style={{
           fontFamily: 'system-ui, Arial, sans-serif',
           fontSize: '9.5px',
           letterSpacing: '0.36em',
           textTransform: 'uppercase',
-          color: 'rgba(240,232,220,0.38)',
+          color: gateOpen ? 'rgba(240,232,220,0.55)' : 'rgba(240,232,220,0.38)',
           fontWeight: 300,
           background: 'none',
           border: 'none',
-          cursor: 'pointer',
+          cursor: gateOpen ? 'default' : 'pointer',
           position: 'relative',
           zIndex: 5,
           padding: '12px 0',
@@ -168,12 +174,10 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          opacity: gateOpen ? 0 : 1,
-          pointerEvents: gateOpen ? 'none' : 'auto',
-          transition: 'opacity 0.4s',
+          transition: 'color 0.5s',
         }}
       >
-        {/* Vinyl icon */}
+        {/* Persistent vinyl-icon circle — never fades, never moves */}
         <span
           aria-hidden="true"
           style={{
@@ -186,30 +190,38 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
             display: 'block',
           }}
         />
-        Begin listening
-      </button>
 
-      {/* Now Playing line — fades in once gate is open and a track is selected */}
-      <p
-        aria-live="polite"
-        style={{
-          fontFamily: 'system-ui, Arial, sans-serif',
-          fontSize: '9.5px',
-          letterSpacing: '0.36em',
-          textTransform: 'uppercase',
-          color: 'rgba(240,232,220,0.55)',
-          fontWeight: 300,
-          position: 'relative',
-          zIndex: 5,
-          marginTop: '20px',
-          padding: '12px 0',
-          opacity: gateOpen && nowPlayingTitle ? 1 : 0,
-          transition: 'opacity 0.6s',
-          pointerEvents: 'none',
-        }}
-      >
-        Now Playing: {nowPlayingTitle}
-      </p>
+        {/* Crossfading text — both states share one CSS-grid cell. The grid
+            container sizes to whichever child is wider, so the circle's
+            position never shifts. Only one span carries the visible text at
+            any moment via opacity; the other is opacity-0 but still occupies
+            the cell for sizing. A track-title fallback keeps the Now Playing
+            span at a stable width even before a track is selected. */}
+        <span style={{ display: 'inline-grid' }}>
+          <span
+            style={{
+              gridColumnStart: 1, gridRowStart: 1,
+              whiteSpace: 'nowrap',
+              opacity: gateOpen ? 0 : 1,
+              transition: 'opacity 0.5s',
+            }}
+          >
+            Begin listening
+          </span>
+          <span
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+              gridColumnStart: 1, gridRowStart: 1,
+              whiteSpace: 'nowrap',
+              opacity: gateOpen && nowPlayingTitle ? 1 : 0,
+              transition: 'opacity 0.5s',
+            }}
+          >
+            Now Playing: {nowPlayingTitle ?? 'Nocturne in E-flat'}
+          </span>
+        </span>
+      </button>
 
       {/* Scroll hint */}
       <div
