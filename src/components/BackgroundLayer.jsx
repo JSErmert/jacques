@@ -102,22 +102,14 @@ export default function BackgroundLayer() {
           aria-hidden="true"
         >
           <defs>
-            <radialGradient id="rg-center" cx="50%" cy="47%" r="44%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.15"/>
-              <stop offset="42%"  stopColor="#a06828" stopOpacity="0.06"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </radialGradient>
-            {/* Beam stops bumped ~+25% intensity */}
+            {/* Beam stops (~+25% intensity from the mockup baseline) */}
             <linearGradient id="lg-cone" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.28"/>
               <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.15"/>
               <stop offset="70%"  stopColor="#a06828" stopOpacity="0.06"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </linearGradient>
-            {/* Floor pool — gradient peak now anchored to ellipse CENTER
-                (was 100%, which put the bright spot at the bbox bottom and
-                made the visible portion read as dilute mid-screen warmth).
-                Three-stop falloff gives a defined pool with soft edges. */}
+            {/* Floor pool — gradient peak anchored to ellipse CENTER + soft 3-stop falloff */}
             <radialGradient id="rg-floor" cx="50%" cy="50%" r="50%">
               <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.18"/>
               <stop offset="45%"  stopColor="#c8893a" stopOpacity="0.10"/>
@@ -131,13 +123,6 @@ export default function BackgroundLayer() {
               <stop offset="0%"   stopColor="#a06828" stopOpacity="0.08"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
-            <linearGradient id="lg-horizon" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"   stopColor="#a06828" stopOpacity="0"/>
-              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.04"/>
-              <stop offset="50%"  stopColor="#e8b060" stopOpacity="0.03"/>
-              <stop offset="70%"  stopColor="#c8893a" stopOpacity="0.04"/>
-              <stop offset="100%" stopColor="#a06828" stopOpacity="0"/>
-            </linearGradient>
             <linearGradient id="lg-topvign" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#0f0805" stopOpacity="0.55"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
@@ -152,25 +137,20 @@ export default function BackgroundLayer() {
             </filter>
           </defs>
           <rect width="1440" height="900" fill="#0f0805"/>
-          <rect width="1440" height="900" fill="url(#rg-center)"/>
           {/* Proscenium cone — Gaussian-feathered, polygons extended past viewBox */}
           <g filter="url(#coneSoften)">
             <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
             <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
           </g>
-          {/* Stage floor glow — center positioned at SVG y=820 (~91% down)
-              so the BRIGHT peak of the gradient lands deep in the bottom
-              quartile of the viewport, where a real floor pool would be. */}
+          {/* Stage floor glow — bright peak at SVG y=707 (~78% down, just
+              inside the bottom quartile). Midpoint between the too-deep
+              cy=820 and the too-high cy=595 versions. */}
           <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="820" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
+            <ellipse cx="720" cy="707" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
           </g>
           {/* Symmetric side blooms */}
           <rect width="1440" height="900" fill="url(#rg-left)"/>
           <rect width="1440" height="900" fill="url(#rg-right)"/>
-          {/* Horizon band — gently feathered so it doesn't read as a hard line */}
-          <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="445" rx="880" ry="42" fill="url(#lg-horizon)" opacity="0.9"/>
-          </g>
           {/* Top vignette */}
           <rect width="1440" height="110" fill="url(#lg-topvign)"/>
         </svg>
