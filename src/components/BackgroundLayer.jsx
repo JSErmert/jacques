@@ -89,7 +89,10 @@ export default function BackgroundLayer() {
           animation: 'driftCool 18s ease-in-out infinite alternate-reverse',
         }} />
 
-        {/* Proscenium spotlight — SVG from mockup for fidelity */}
+        {/* Atmospheric lighting — soft radial blobs only, no hard cone polygons.
+            The old proscenium polygons read as a "cheap spotlight" once the
+            hero scrolled out from under them; this gradient-only approach
+            stays gradient and realistic at every scroll position. */}
         <svg
           viewBox="0 0 1440 900"
           preserveAspectRatio="xMidYMid slice"
@@ -98,55 +101,43 @@ export default function BackgroundLayer() {
           aria-hidden="true"
         >
           <defs>
-            <radialGradient id="rg-center" cx="50%" cy="47%" r="44%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.15"/>
-              <stop offset="42%"  stopColor="#a06828" stopOpacity="0.06"/>
+            {/* Soft warm spotlight from above — replaces the hard polygons.
+                Centered just above the viewport so the falloff carries warmth
+                gently down through the whole scene. */}
+            <radialGradient id="rg-spotlight" cx="50%" cy="-8%" r="62%">
+              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.22"/>
+              <stop offset="22%"  stopColor="#c8893a" stopOpacity="0.10"/>
+              <stop offset="55%"  stopColor="#a06828" stopOpacity="0.04"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
-            <linearGradient id="lg-cone" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.18"/>
-              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.10"/>
-              <stop offset="70%"  stopColor="#a06828" stopOpacity="0.04"/>
-              <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </linearGradient>
-            <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.08"/>
+            {/* Center ambient pool — wide, very soft */}
+            <radialGradient id="rg-center" cx="50%" cy="48%" r="52%">
+              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.12"/>
+              <stop offset="48%"  stopColor="#a06828" stopOpacity="0.05"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
-            <radialGradient id="rg-left" cx="14%" cy="62%" r="34%">
-              <stop offset="0%"   stopColor="#a06828" stopOpacity="0.08"/>
+            {/* Floor warmth — soft pool, no hard ellipse edges */}
+            <radialGradient id="rg-floor" cx="50%" cy="104%" r="60%">
+              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.10"/>
+              <stop offset="55%"  stopColor="#a06828" stopOpacity="0.04"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
-            <radialGradient id="rg-right" cx="86%" cy="62%" r="34%">
-              <stop offset="0%"   stopColor="#a06828" stopOpacity="0.08"/>
+            {/* Side washes — barely-there room-light ambiance */}
+            <radialGradient id="rg-left" cx="4%" cy="56%" r="46%">
+              <stop offset="0%"   stopColor="#8a4a18" stopOpacity="0.07"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
-            <linearGradient id="lg-horizon" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"   stopColor="#a06828" stopOpacity="0"/>
-              <stop offset="30%"  stopColor="#c8893a" stopOpacity="0.04"/>
-              <stop offset="50%"  stopColor="#e8b060" stopOpacity="0.03"/>
-              <stop offset="70%"  stopColor="#c8893a" stopOpacity="0.04"/>
-              <stop offset="100%" stopColor="#a06828" stopOpacity="0"/>
-            </linearGradient>
-            <linearGradient id="lg-topvign" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#0f0805" stopOpacity="0.55"/>
+            <radialGradient id="rg-right" cx="96%" cy="56%" r="46%">
+              <stop offset="0%"   stopColor="#8a4a18" stopOpacity="0.07"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
-            </linearGradient>
+            </radialGradient>
           </defs>
           <rect width="1440" height="900" fill="#0f0805"/>
+          <rect width="1440" height="900" fill="url(#rg-spotlight)"/>
           <rect width="1440" height="900" fill="url(#rg-center)"/>
-          {/* Proscenium cone — tight from top center */}
-          <polygon points="720,0 500,900 940,900" fill="url(#lg-cone)" opacity="0.65"/>
-          <polygon points="720,0 260,900 1180,900" fill="url(#lg-cone)" opacity="0.28"/>
-          {/* Stage floor glow */}
-          <ellipse cx="720" cy="900" rx="500" ry="150" fill="url(#rg-floor)" opacity="0.9"/>
-          {/* Symmetric side blooms */}
+          <rect width="1440" height="900" fill="url(#rg-floor)"/>
           <rect width="1440" height="900" fill="url(#rg-left)"/>
           <rect width="1440" height="900" fill="url(#rg-right)"/>
-          {/* Horizon band */}
-          <ellipse cx="720" cy="445" rx="880" ry="42" fill="url(#lg-horizon)" opacity="0.9"/>
-          {/* Top vignette */}
-          <rect width="1440" height="110" fill="url(#lg-topvign)"/>
         </svg>
       </div>
     </>
