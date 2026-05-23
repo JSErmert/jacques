@@ -2,6 +2,16 @@
 // discipline line, and "Begin listening" vinyl-icon CTA.
 // Visual CSS ported from docs/superpowers/specs/variants/B3-archive-stage/mockup.html.
 // NO pillars here — pillars live in the post-hero sections wrapper only.
+//
+// CTA animation: the vinyl-icon circle starts flush against the "Begin
+// listening" text (natural flex gap), then on Begin click slides smoothly
+// leftward as the text widens to "Now Playing: [Song]". This is achieved
+// by measuring the rendered width of each text via useLayoutEffect and
+// transitioning the text wrapper's `width` between the two measured values;
+// because the parent flex container centers the button, a wider wrapper
+// shifts the whole button (circle included) leftward in sync.
+
+import { useState, useRef, useLayoutEffect } from 'react'
 
 const styles = `
   @keyframes centerPulse {
@@ -72,6 +82,27 @@ const styles = `
 `
 
 export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
+  // Measure each text's rendered width so we can transition the wrapper
+  // between them — the circle stays "right up to" the active text and
+  // slides left when the text grows wider.
+  const beginRef = useRef(null)
+  const npRef = useRef(null)
+  const [widths, setWidths] = useState({ begin: null, np: null })
+
+  useLayoutEffect(() => {
+    if (beginRef.current && npRef.current) {
+      const b = beginRef.current.offsetWidth
+      const n = npRef.current.offsetWidth
+      if (b && n && (b !== widths.begin || n !== widths.np)) {
+        setWidths({ begin: b, np: n })
+      }
+    }
+  }, [nowPlayingTitle, widths.begin, widths.np])
+
+  const ctaWidth = gateOpen && nowPlayingTitle
+    ? (widths.np ?? 'auto')
+    : (widths.begin ?? 'auto')
+
   return (
     <section
       style={{
@@ -191,31 +222,42 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
           }}
         />
 
-        {/* Crossfading text — both states share one CSS-grid cell. The grid
-            container sizes to whichever child is wider, so the circle's
-            position never shifts. Only one span carries the visible text at
-            any moment via opacity; the other is opacity-0 but still occupies
-            the cell for sizing. A track-title fallback keeps the Now Playing
-            span at a stable width even before a track is selected. */}
-        <span style={{ display: 'inline-grid' }}>
+        {/* Crossfading text with animated width. Both spans are absolute-
+            positioned at left:0, top:0; the wrapper's width transitions
+            between the measured begin / Now-Playing widths so the active
+            text always extends from the circle to the right edge — no dead
+            space, and the circle slides left as the wrapper widens. */}
+        <span
+          style={{
+            position: 'relative',
+            display: 'inline-block',
+            width: ctaWidth,
+            height: '1em',
+            transition: 'width 0.6s cubic-bezier(0.22,1,0.36,1)',
+          }}
+        >
           <span
+            ref={beginRef}
             style={{
-              gridColumnStart: 1, gridRowStart: 1,
+              position: 'absolute',
+              left: 0, top: 0,
               whiteSpace: 'nowrap',
               opacity: gateOpen ? 0 : 1,
-              transition: 'opacity 0.5s',
+              transition: 'opacity 0.5s ease',
             }}
           >
             Begin listening
           </span>
           <span
+            ref={npRef}
             aria-live="polite"
             aria-atomic="true"
             style={{
-              gridColumnStart: 1, gridRowStart: 1,
+              position: 'absolute',
+              left: 0, top: 0,
               whiteSpace: 'nowrap',
               opacity: gateOpen && nowPlayingTitle ? 1 : 0,
-              transition: 'opacity 0.5s',
+              transition: 'opacity 0.5s ease',
             }}
           >
             Now Playing: {nowPlayingTitle ?? 'Nocturne in E-flat'}
