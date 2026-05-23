@@ -114,9 +114,13 @@ export default function BackgroundLayer() {
               <stop offset="70%"  stopColor="#a06828" stopOpacity="0.06"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </linearGradient>
-            {/* Floor pool stops bumped ~+25% intensity */}
-            <radialGradient id="rg-floor" cx="50%" cy="100%" r="50%">
-              <stop offset="0%"   stopColor="#c8893a" stopOpacity="0.115"/>
+            {/* Floor pool — gradient peak now anchored to ellipse CENTER
+                (was 100%, which put the bright spot at the bbox bottom and
+                made the visible portion read as dilute mid-screen warmth).
+                Three-stop falloff gives a defined pool with soft edges. */}
+            <radialGradient id="rg-floor" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stopColor="#e8b060" stopOpacity="0.18"/>
+              <stop offset="45%"  stopColor="#c8893a" stopOpacity="0.10"/>
               <stop offset="100%" stopColor="#0f0805" stopOpacity="0"/>
             </radialGradient>
             <radialGradient id="rg-left" cx="14%" cy="62%" r="34%">
@@ -154,12 +158,11 @@ export default function BackgroundLayer() {
             <polygon points="720,-80 460,980 980,980" fill="url(#lg-cone)" opacity="0.68"/>
             <polygon points="720,-80 220,980 1220,980" fill="url(#lg-cone)" opacity="0.30"/>
           </g>
-          {/* Stage floor glow — pushed much further down (cy 900 -> 1040) so
-              the brightest core sits below the viewport and only the soft
-              upper fringe reads as a horizon glow at the bottom of screen.
-              Larger ry compensates so plenty still shines through. */}
+          {/* Stage floor glow — center positioned at SVG y=820 (~91% down)
+              so the BRIGHT peak of the gradient lands deep in the bottom
+              quartile of the viewport, where a real floor pool would be. */}
           <g filter="url(#atmoSoften)">
-            <ellipse cx="720" cy="1040" rx="620" ry="210" fill="url(#rg-floor)" opacity="1.0"/>
+            <ellipse cx="720" cy="820" rx="560" ry="135" fill="url(#rg-floor)" opacity="1.0"/>
           </g>
           {/* Symmetric side blooms */}
           <rect width="1440" height="900" fill="url(#rg-left)"/>
