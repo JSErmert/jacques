@@ -80,7 +80,7 @@ const styles = `
       width: 95vw; height: 85vw;
     }
     .hero-floor-pool {
-      width: 90vw; height: 20vw;
+      width: 60vw; height: 14vw;
     }
   }
 `
@@ -136,8 +136,13 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
           pointerEvents: 'none',
           zIndex: 2,
           background: [
-            'radial-gradient(ellipse 17% 56% at 50% 0%, rgba(232,176,96,0.22) 0%, rgba(200,137,58,0.13) 36%, transparent 76%)',
-            'radial-gradient(ellipse 44% 62% at 50% 0%, rgba(200,137,58,0.08) 0%, transparent 62%)',
+            // Beam widths are CAPPED so the desktop cone never blows up
+            // past mobile's natural absolute width. 17vw on 390px mobile
+            // = 66px (the look the operator likes); same 66-70px on
+            // tablet/desktop/wide — the beam stays absolutely thin and
+            // reads as proportionally narrower on bigger screens.
+            'radial-gradient(ellipse clamp(50px, 17vw, 70px) 56% at 50% 0%, rgba(232,176,96,0.22) 0%, rgba(200,137,58,0.13) 36%, transparent 76%)',
+            'radial-gradient(ellipse clamp(140px, 44vw, 185px) 62% at 50% 0%, rgba(200,137,58,0.08) 0%, transparent 62%)',
           ].join(','),
           animation: 'coneRise 2.4s ease-out forwards',
           opacity: 0,
