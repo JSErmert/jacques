@@ -106,16 +106,20 @@ export default function PersistentPlayer({ track, isPlaying, onTogglePlay, onPre
   // start action AND on every track change while playing, so prev/next and
   // tile-to-tile switches show the arm move instead of sitting still.
   const [armEngaged, setArmEngaged] = useState(false)
+  // Intentional cascading state — we WANT a park→engage transition on every
+  // play/track-change so the CSS transition replays. React's linter flags
+  // this as "synchronous setState in effect"; the cascade is the feature.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!isPlaying) {
       setArmEngaged(false)
       return
     }
-    // Park, then engage on the next frame so the transition replays.
     setArmEngaged(false)
     const t = setTimeout(() => setArmEngaged(true), 80)
     return () => clearTimeout(t)
   }, [isPlaying, track?.id])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!track) return null
 

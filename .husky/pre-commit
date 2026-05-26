@@ -1,0 +1,13 @@
+# Lint staged JS/JSX with ESLint --fix
+npx lint-staged
+
+# Run the full Vitest suite — fast (~6s on this repo)
+npm test
+
+# Secret scan staged changes if gitleaks is available.
+# CI runs gitleaks on full history regardless; this is the local short-circuit.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --verbose
+else
+  echo "[pre-commit] gitleaks not on PATH — relying on CI scan. Install: https://github.com/gitleaks/gitleaks"
+fi
