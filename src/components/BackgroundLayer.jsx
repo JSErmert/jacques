@@ -47,8 +47,12 @@ const styles = `
 
 // Pool position interpolates linearly between these as scrollY moves from 0
 // (top of hero) to viewport-height (hero scrolled out of view).
-const POOL_CY_HERO = 565   // ~63% down — centered on Begin Listening
-const POOL_CY_AFTER = 651  // ~72% down — settled in bottom quartile
+// Hero pool sits BELOW the button center (visual peak of the cone bleed plus
+// the pool gradient combines higher than the pool's geometric center, so the
+// pool's center is anchored low on the "stage floor" to put the perceived
+// spotlight directly behind the button rather than above it).
+const POOL_CY_HERO = 645   // ~72% down — pool center on floor below button
+const POOL_CY_AFTER = 720  // ~80% down — settled deeper for post-hero stage feel
 
 export default function BackgroundLayer() {
   const [poolCy, setPoolCy] = useState(POOL_CY_HERO)

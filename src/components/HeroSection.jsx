@@ -60,15 +60,26 @@ const styles = `
     pointer-events: none;
     z-index: 1;
   }
+  /* Pool is now a child of .hero-cta-wrap (the button's relatively-
+     positioned container), so left/top 50% with translate(-50%,-50%)
+     centers it on the button itself — no hard-coded viewport % needed.
+     Peak of the radial gradient is at 50%/50% so the brightest point of
+     the spotlight sits directly behind the button text on every viewport. */
+  .hero-cta-wrap {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+    z-index: 5;
+  }
   .hero-floor-pool {
     position: absolute;
-    left: 50%; top: 56%;
-    transform: translateX(-50%);
-    width: 500px; height: 120px;
-    background: radial-gradient(ellipse 100% 100% at 50% 20%, rgba(200,137,58,0.09) 0%, transparent 70%);
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px; height: 110px;
+    background: radial-gradient(ellipse 100% 100% at 50% 50%, rgba(232,176,96,0.24) 0%, rgba(200,137,58,0.13) 32%, rgba(160,104,40,0.05) 64%, transparent 88%);
     border-radius: 50%;
     pointer-events: none;
-    z-index: 1;
+    z-index: -1;
     animation: poolRise 3.0s ease-out forwards;
     opacity: 0;
   }
@@ -80,7 +91,7 @@ const styles = `
       width: 95vw; height: 85vw;
     }
     .hero-floor-pool {
-      width: 60vw; height: 14vw;
+      width: 78vw; height: 22vw;
     }
   }
 `
@@ -149,9 +160,6 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
         }}
       />
 
-      {/* Stage floor pool */}
-      <div aria-hidden="true" className="hero-floor-pool" />
-
       {/* Artist name */}
       <h1 className="hero-name">
         Jacques
@@ -193,32 +201,35 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
           so they stay perfectly centered as the button widens or narrows.
           The circle is absolute-positioned 12px to the LEFT of the button's
           left edge; as the button widens, its left edge moves outward and
-          the circle slides leftward in sync. */}
-      <button
-        onClick={!gateOpen ? onBegin : undefined}
-        disabled={gateOpen}
-        aria-label={!gateOpen ? 'Begin listening' : undefined}
-        style={{
-          fontFamily: 'system-ui, Arial, sans-serif',
-          fontSize: '9.5px',
-          letterSpacing: '0.36em',
-          textTransform: 'uppercase',
-          color: gateOpen ? 'rgba(240,232,220,0.55)' : 'rgba(240,232,220,0.38)',
-          fontWeight: 300,
-          background: 'none',
-          border: 'none',
-          cursor: gateOpen ? 'default' : 'pointer',
-          position: 'relative',
-          display: 'inline-block',
-          zIndex: 5,
-          padding: '12px 0',
-          marginTop: '20px',
-          width: ctaWidth,
-          minHeight: '20px',
-          overflow: 'visible',
-          transition: 'color 0.5s, width 0.6s cubic-bezier(0.22,1,0.36,1)',
-        }}
-      >
+          the circle slides leftward in sync.
+          The wrapper carries the floor pool so the spotlight is always
+          centered behind the button on every viewport. */}
+      <div className="hero-cta-wrap">
+        <div aria-hidden="true" className="hero-floor-pool" />
+        <button
+          onClick={!gateOpen ? onBegin : undefined}
+          disabled={gateOpen}
+          aria-label={!gateOpen ? 'Begin listening' : undefined}
+          style={{
+            fontFamily: 'system-ui, Arial, sans-serif',
+            fontSize: '9.5px',
+            letterSpacing: '0.36em',
+            textTransform: 'uppercase',
+            color: gateOpen ? 'rgba(240,232,220,0.55)' : 'rgba(240,232,220,0.38)',
+            fontWeight: 300,
+            background: 'none',
+            border: 'none',
+            cursor: gateOpen ? 'default' : 'pointer',
+            position: 'relative',
+            display: 'inline-block',
+            zIndex: 5,
+            padding: '12px 0',
+            width: ctaWidth,
+            minHeight: '20px',
+            overflow: 'visible',
+            transition: 'color 0.5s, width 0.6s cubic-bezier(0.22,1,0.36,1)',
+          }}
+        >
         {/* Vinyl-icon circle — anchored 12px LEFT of the button's left edge.
             As the button widens, the left edge moves outward and the circle
             slides smoothly leftward with it. */}
@@ -270,7 +281,8 @@ export default function HeroSection({ onBegin, gateOpen, nowPlayingTitle }) {
         >
           Now Playing: {nowPlayingTitle ?? 'Nocturne in E-flat'}
         </span>
-      </button>
+        </button>
+      </div>
 
       {/* Scroll hint */}
       <div
