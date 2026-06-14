@@ -100,10 +100,11 @@ export default function NavigationBar() {
       {/* Right — nav links */}
       <ul className="nav-links">
         {[
-          { label: 'Archive', href: '#archive' },
-          { label: 'About',   href: '#about' },
-          { label: 'Live',    href: '#live' },
-          { label: 'Contact', href: '#contact' },
+          { label: 'About',      href: '#about' },
+          { label: 'Collection', href: '#library' },
+          { label: 'Archive',    href: '#archive' },
+          { label: 'Live',       href: '#live' },
+          { label: 'Contact',    href: '#contact' },
         ].map(({ label, href }) => (
           <li key={label}>
             <a
