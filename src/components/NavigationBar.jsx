@@ -102,7 +102,7 @@ export default function NavigationBar() {
         {[
           { label: 'About',      href: '#about' },
           { label: 'Collection', href: '#library' },
-          { label: 'Archive',    href: '#archive' },
+          { label: 'Pressings',  href: '#archive' },
           { label: 'Live',       href: '#live' },
           { label: 'Contact',    href: '#contact' },
         ].map(({ label, href }) => (

@@ -8,16 +8,22 @@ describe('NavigationBar', () => {
     expect(screen.getByText(/jacques/i)).toBeInTheDocument()
   })
 
-  it('renders all four nav links with correct hrefs', () => {
+  it('renders all nav links with correct hrefs, in page order', () => {
     render(<NavigationBar />)
-    const archiveLink = screen.getByRole('link', { name: /archive/i })
-    const aboutLink   = screen.getByRole('link', { name: /about/i })
-    const liveLink    = screen.getByRole('link', { name: /live/i })
-    const contactLink = screen.getByRole('link', { name: /contact/i })
+    const aboutLink      = screen.getByRole('link', { name: /about/i })
+    const collectionLink = screen.getByRole('link', { name: /collection/i })
+    const pressingsLink  = screen.getByRole('link', { name: /pressings/i })
+    const liveLink       = screen.getByRole('link', { name: /live/i })
+    const contactLink    = screen.getByRole('link', { name: /contact/i })
 
-    expect(archiveLink).toHaveAttribute('href', '#archive')
     expect(aboutLink).toHaveAttribute('href', '#about')
+    expect(collectionLink).toHaveAttribute('href', '#library')
+    expect(pressingsLink).toHaveAttribute('href', '#archive')
     expect(liveLink).toHaveAttribute('href', '#live')
     expect(contactLink).toHaveAttribute('href', '#contact')
+
+    // About comes before Pressings
+    const links = screen.getAllByRole('link').map((a) => a.textContent)
+    expect(links.indexOf('About')).toBeLessThan(links.indexOf('Pressings'))
   })
 })
